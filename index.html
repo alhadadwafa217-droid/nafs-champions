@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة دوري أبطال نافس | نافس بمهارتك… وكن بطل نافس!</title>
+    <!-- خطوط عربية احترافية -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- مكتبة Supabase للربط السحابي الفعلي -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- مكتبة الرسوم البيانية Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- مكتبة تصدير الشهادات كصورة PNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- مكتبة مؤثرات الاحتفال عند الإنجاز -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        nafs: {
+                            sky: '#0ea5e9',
+                            skyDark: '#0284c7',
+                            skyLight: '#e0f2fe',
+                            navy: '#0f294a',
+                            navyDark: '#091a30',
+                            gold: '#eab308',
+                            goldLight: '#fef08a',
+                            goldBright: '#facc15',
+                            orange: '#f59e0b',
+                            green: '#16a34a',
+                            cyan: '#06b6d4'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #fefce8 100%);
+            color: #0f294a;
+            overflow-x: hidden;
+        }
+
+        /* تصميم بطاقات ثلاثية الأبعاد 3D */
+        .card-3d {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(15, 41, 74, 0.08), 0 8px 10px -6px rgba(14, 165, 233, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(14, 165, 233, 0.18);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .card-3d:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 35px -10px rgba(14, 165, 233, 0.2), 0 0 15px rgba(234, 179, 8, 0.15);
+            border-color: rgba(234, 179, 8, 0.5);
+        }
+
+        /* أزرار ثلاثية الأبعاد تفاعلية */
+        .btn-3d-sky {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            box-shadow: 0 5px 0 #0369a1, 0 10px 20px rgba(2, 132, 199, 0.3);
+            transition: all 0.15s ease;
+        }
+        .btn-3d-sky:hover {
+            filter: brightness(1.05);
+            transform: translateY(-2px);
+        }
+        .btn-3d-sky:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #0369a1, 0 4px 10px rgba(2, 132, 199, 0.2);
+        }
+
+        .btn-3d-gold {
+            background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
+            color: #0f294a;
+            box-shadow: 0 5px 0 #a16207, 0 10px 20px rgba(234, 179, 8, 0.35);
+            transition: all 0.15s ease;
+        }
+        .btn-3d-gold:hover {
+            filter: brightness(1.05);
+            transform: translateY(-2px);
+        }
+        .btn-3d-gold:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #a16207, 0 4px 10px rgba(234, 179, 8, 0.2);
+        }
+
+        .btn-3d-navy {
+            background: linear-gradient(180deg, #1e3a8a 0%, #0f294a 100%);
+            color: #ffffff;
+            box-shadow: 0 5px 0 #061121, 0 10px 20px rgba(15, 41, 74, 0.3);
+            transition: all 0.15s ease;
+        }
+        .btn-3d-navy:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #061121;
+        }
+
+        /* حركة طفو ثلاثية الأبعاد للعناصر */
+        @keyframes float3d {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        .animate-float {
+            animation: float3d 4s ease-in-out infinite;
+        }
+
+        /* شريط التمرير المخصص */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e0f2fe;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0284c7;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0f294a;
+        }
+
+        /* تنسيق شهادة الإنجاز A4 أفقي للطباعة */
+        .certificate-a4 {
+            width: 100%;
+            max-width: 960px;
+            aspect-ratio: 1.414 / 1;
+            background: radial-gradient(circle at center, #ffffff 60%, #f0f9ff 100%);
+            border: 12px solid #0f294a;
+            outline: 4px solid #eab308;
+            outline-offset: -18px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(15, 41, 74, 0.25);
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-certificate-area, #printable-certificate-area * {
+                visibility: visible;
+            }
+            #printable-certificate-area {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                z-index: 99999;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- نظام الإشعارات والرسائل المنبثقة المخصصة (بديل alert و confirm) -->
+    <div id="toast-container" class="fixed top-20 left-4 z-[9999] flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- نافذة التأكيد التفاعلية -->
+    <div id="custom-modal" class="fixed inset-0 bg-nafs-navy/70 backdrop-blur-sm z-[9998] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-nafs-gold transform transition-all scale-95" id="custom-modal-box">
+            <div class="flex items-center gap-3 mb-4">
+                <div id="modal-icon" class="w-12 h-12 rounded-2xl bg-nafs-skyLight text-nafs-skyDark flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-circle-question"></i>
+                </div>
+                <h3 id="modal-title" class="text-xl font-extrabold text-nafs-navy">تأكيد الإجراء</h3>
+            </div>
+            <p id="modal-message" class="text-slate-600 mb-6 leading-relaxed font-medium"></p>
+            <div class="flex justify-end gap-3">
+                <button id="modal-cancel-btn" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition">إلغاء</button>
+                <button id="modal-confirm-btn" class="px-6 py-2.5 rounded-xl btn-3d-sky text-white font-bold">نعم، متابعة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- الترويسة الرسمية للمدرسة والمنصة -->
+    <header class="bg-white/95 backdrop-blur-md border-b-2 border-nafs-gold/40 sticky top-0 z-50 shadow-sm">
+        <!-- الشريط العلوي للبيانات الرسمية وحالة الربط السحابي -->
+        <div class="bg-nafs-navy text-white text-xs sm:text-sm py-2 px-4">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="flex items-center gap-1.5 font-semibold text-nafs-goldBright">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <span id="header-edu-dept">الإدارة العامة للتعليم</span>
+                    </span>
+                    <span class="hidden sm:inline text-white/40">|</span>
+                    <span class="flex items-center gap-1.5 font-bold">
+                        <i class="fa-solid fa-school text-nafs-sky"></i>
+                        <span id="header-school-name">المدرسة الابتدائية والمتوسطة النموذجية</span>
+                    </span>
+                    <span class="hidden md:inline text-white/40">|</span>
+                    <span class="hidden md:inline text-sky-200" id="header-academic-year">العام الدراسي ١٤٤٧هـ - الفصل الدراسي الثاني</span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <!-- مؤشر حالة قاعدة البيانات السحابية -->
+                    <button onclick="navigateTo('admin-login')" id="db-status-badge" class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 transition text-xs cursor-pointer" title="حالة الاتصال بقاعدة البيانات السحابية">
+                        <span id="db-status-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span id="db-status-text">وضع التخزين المحلي (جاهز للربط السحابي)</span>
+                    </button>
+
+                    <!-- زر دخول الإدارة المحمي -->
+                    <button onclick="navigateTo('admin-login')" class="flex items-center gap-1.5 bg-nafs-gold text-nafs-navy font-extrabold px-3 py-1 rounded-lg hover:bg-nafs-goldBright transition text-xs shadow">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>لوحة الإدارة</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الترويسة الرئيسية والشعار -->
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <!-- زر فتح الفهرس التفاعلي + الشعار -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-3 rounded-2xl bg-nafs-skyLight text-nafs-navy hover:bg-nafs-sky hover:text-white transition shadow-sm flex items-center gap-2 font-bold" aria-label="دليلكِ إلى دوري أبطال نافس">
+                    <i class="fa-solid fa-bars-staggered text-xl"></i>
+                    <span class="hidden sm:inline text-sm">دليلكِ التفاعلي</span>
+                </button>
+
+                <div onclick="navigateTo('home')" class="flex items-center gap-3 cursor-pointer group">
+                    <!-- شعار اختبارات نافس الرسمي المدمج كـ SVG عالي الدقة مطابق للصورة المرفقة -->
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white shadow-md border border-sky-100 p-1 flex items-center justify-center group-hover:scale-105 transition">
+                        <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <!-- الحلقات المدارية -->
+                            <ellipse cx="100" cy="105" rx="82" ry="62" transform="rotate(-18 100 105)" fill="none" stroke="#4ea8be" stroke-width="2.5" opacity="0.85"/>
+                            <ellipse cx="100" cy="108" rx="76" ry="58" transform="rotate(24 100 108)" fill="none" stroke="#d99b52" stroke-width="2.5" opacity="0.85"/>
+                            <!-- المربع البرتقالي (علامة استفهام) -->
+                            <g transform="translate(22, 32) rotate(-14)">
+                                <rect x="0" y="0" width="46" height="46" rx="10" fill="#f39c4f"/>
+                                <text x="23" y="34" font-family="Cairo, sans-serif" font-weight="900" font-size="30" fill="#ffffff" text-anchor="middle">?</text>
+                            </g>
+                            <!-- الدائرة الخضراء (علامة صح) -->
+                            <g transform="translate(73, 24)">
+                                <circle cx="27" cy="27" r="26" fill="#46a76c"/>
+                                <path d="M16 27 L24 35 L39 19" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <!-- المربع الأزرق السماوي (علامة تعجب) -->
+                            <g transform="translate(132, 26) rotate(12)">
+                                <rect x="0" y="0" width="46" height="46" rx="10" fill="#52b2c8"/>
+                                <text x="23" y="34" font-family="Cairo, sans-serif" font-weight="900" font-size="30" fill="#ffffff" text-anchor="middle">!</text>
+                            </g>
+                            <!-- كلمة نافس -->
+                            <text x="100" y="122" font-family="Cairo, sans-serif" font-weight="900" font-size="38" fill="#3a2e7c" text-anchor="middle">نافس</text>
+                            <!-- كلمة NAFS -->
+                            <text x="100" y="156" font-family="Tajawal, sans-serif" font-weight="700" font-size="25" letter-spacing="3" fill="#3a2e7c" text-anchor="middle">NAFS</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-2xl font-black text-nafs-navy tracking-tight flex items-center gap-1.5">
+                            <span>منصة دوري أبطال نافس</span>
+                            <span class="text-nafs-gold text-base sm:text-xl">🏆</span>
+                        </h1>
+                        <p class="text-xs sm:text-sm font-bold text-nafs-skyDark">نافس بمهارتك… وكن بطل نافس!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- حالة الطالبة المسجلة أو زر التسجيل السريع -->
+            <div id="header-student-area" class="flex items-center gap-2 sm:gap-3">
+                <button onclick="navigateTo('register')" class="btn-3d-gold px-4 sm:px-6 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-rocket"></i>
+                    <span>ابدئي رحلتكِ</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- القائمة الجانبية التفاعلية: دليلكِ إلى دوري أبطال نافس (20 قسمًا) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-nafs-navy/60 backdrop-blur-xs z-50 hidden transition-opacity"></div>
+    <aside id="interactive-sidebar" class="fixed top-0 right-0 h-full w-80 max-w-[88vw] bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l-4 border-nafs-gold">
+        <div class="p-5 bg-gradient-to-l from-nafs-navy to-nafs-skyDark text-white flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <span class="text-2xl">🧭</span>
+                <div>
+                    <h2 class="font-extrabold text-base">دليلكِ إلى دوري أبطال نافس</h2>
+                    <p class="text-xs text-sky-200">الفهرس التفاعلي الشامل (٢٠ قسمًا)</p>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-3 space-y-1 text-sm font-bold" id="sidebar-links-list">
+            <!-- يتم توليد الروابط الـ 20 ديناميكيًا لضمان الدقة والتفاعلية الكاملة -->
+        </div>
+
+        <div class="p-4 bg-sky-50 border-t border-sky-100 text-center">
+            <p class="text-xs font-bold text-nafs-navy mb-2">«نتعلم لنتقدم، نتنافس لنتميز، وننجح لنكون أبطالًا»</p>
+            <button onclick="toggleSidebar(); navigateTo('admin-login')" class="w-full py-2 rounded-xl bg-nafs-navy text-nafs-goldBright text-xs font-extrabold hover:bg-nafs-navyDark transition">
+                <i class="fa-solid fa-lock ml-1"></i> بوابة إدارة المنصة
+            </button>
+        </div>
+    </aside>
+
+    <!-- المحتوى الرئيسي الديناميكي للمنصة -->
+    <main id="app-content" class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8">
+        <!-- يتم حقن الصفحات والأقسام هنا بسلاسة -->
+    </main>
+
+    <!-- التذييل الرسمي -->
+    <footer class="bg-nafs-navy text-white border-t-4 border-nafs-gold mt-12">
+        <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-2xl">🏆</span>
+                    <h3 class="text-lg font-black text-nafs-goldBright">منصة دوري أبطال نافس</h3>
+                </div>
+                <p class="text-sm text-sky-200 leading-relaxed" id="footer-platform-desc">
+                    منصة تعليمية تفاعلية متخصصة في تهيئة طالبات المرحلتين الابتدائية والمتوسطة لاختبارات نافس الوطنية في لغتي والرياضيات والعلوم.
+                </p>
+            </div>
+            <div class="text-center">
+                <p class="font-extrabold text-nafs-gold text-base mb-1">«نتعلم لنتقدم، نتنافس لنتميز، وننجح لنكون أبطالًا»</p>
+                <p class="text-xs text-sky-300">نافس بمهارتك… وكن بطل نافس!</p>
+            </div>
+            <div class="md:text-left text-xs text-sky-200 space-y-1">
+                <p><span class="text-nafs-gold font-bold">مديرة المدرسة:</span> <span id="footer-principal">أ. نورة بنت عبدالله</span></p>
+                <p><span class="text-nafs-gold font-bold">منسقة المشروع:</span> <span id="footer-coordinator">أ. سارة بنت محمد</span></p>
+                <p class="text-sky-400 pt-1">جميع الحقوق محفوظة © ٢٠٢٦م</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================================================================== -->
+    <!-- البرمجة الكاملة والمنطق التعليمي وقاعدة البيانات السحابية والأسئلة -->
+    <!-- ===================================================================== -->
+    <script>
+        /*************************************************************************
+         * 1. تهيئة البيانات الأساسية وبنك الأسئلة المعتمد للمنهج السعودي
+         *************************************************************************/
+        const DEFAULT_SCHOOL_SETTINGS = {
+            edu_dept: 'الإدارة العامة للتعليم بمنطقة الرياض',
+            school_name: 'الابتدائية والمتوسطة النموذجية للبنات',
+            principal_name: 'أ. نورة بنت عبدالله السبيعي',
+            coordinator_name: 'أ. سارة بنت محمد القحطاني',
+            academic_year: '١٤٤٧هـ - ١٤٤٨هـ',
+            semester: 'الفصل الدراسي الثاني',
+            platform_desc: 'منصة تعليمية إلكترونية تفاعلية تهدف إلى تهيئة طالبات الصفوف الثالث الابتدائي والسادس الابتدائي والثالث المتوسط لاختبارات نافس الوطنية بأسلوب شيق وتنافسي.',
+            exam_duration_minutes: 20,
+            comprehensive_per_subject: 4,
+            passing_score: 70,
+            show_full_names_honor: true,
+            show_honor_board: true
+        };
+
+        const STAGES_AND_GRADES = {
+            'ابتدائي': [
+                { id: 'g3', name: 'الصف الثالث الابتدائي', badge: 'أبطال الأساس 🌟' },
+                { id: 'g6', name: 'الصف السادس الابتدائي', badge: 'أبطال التميز 🚀' }
+            ],
+            'متوسط': [
+                { id: 'g9', name: 'الصف الثالث المتوسط', badge: 'أبطال القمة 👑' }
+            ]
+        };
+
+        const SUBJECTS_CONFIG = {
+            'لغتي': {
+                id: 'لغتي',
+                title: 'لغتي الجميلة / الخالدة',
+                icon: 'fa-book-open-reader',
+                emoji: '📖',
+                color: 'sky',
+                bgGradient: 'from-sky-500 to-blue-700',
+                skills: {
+                    'g3': ['فهم المقروء', 'المفردات والمعاني', 'القواعد والإملاء', 'تحديد الفكرة الرئيسة'],
+                    'g6': ['فهم المقروء', 'تحليل النصوص', 'التراكيب اللغوية', 'القواعد والإملاء', 'استنتاج الأفكار'],
+                    'g9': ['فهم المقروء', 'تحليل النصوص الأدبية', 'التراكيب اللغوية والنحو', 'الإملاء والكتابة', 'استنتاج الأفكار والتذوق']
+                }
+            },
+            'الرياضيات': {
+                id: 'الرياضيات',
+                title: 'الرياضيات',
+                icon: 'fa-calculator',
+                emoji: '📐',
+                color: 'amber',
+                bgGradient: 'from-amber-400 to-yellow-600',
+                skills: {
+                    'g3': ['الأعداد والعمليات', 'الجمع والطرح والضرب', 'الكسور البسيطة', 'القياس والهندسة', 'قراءة البيانات'],
+                    'g6': ['الأعداد والعمليات', 'الكسور والأعداد العشرية', 'القياس والهندسة', 'الأنماط والعلاقات', 'حل المسائل اللفظية', 'قراءة الرسوم البيانية'],
+                    'g9': ['الجبر والمعادلات', 'الهندسة والقياس', 'النسبة والتناسب', 'الإحصاء والاحتمالات', 'التفكير الرياضي وحل المسائل']
+                }
+            },
+            'العلوم': {
+                id: 'العلوم',
+                title: 'العلوم',
+                icon: 'fa-flask-vial',
+                emoji: '🔬',
+                color: 'emerald',
+                bgGradient: 'from-emerald-500 to-teal-700',
+                skills: {
+                    'g3': ['الكائنات الحية', 'الأنظمة البيئية', 'المادة وتغيراتها', 'الأرض والفضاء'],
+                    'g6': ['الكائنات الحية ووظائفها', 'الأنظمة البيئية', 'المادة وتغيراتها', 'الطاقة والقوى والحركة', 'الأرض والفضاء'],
+                    'g9': ['جسم الإنسان والصحة', 'المادة والتفاعلات الكيميائية', 'الطاقة والقوى والحركة', 'الأرض والكون', 'التجارب والاستقصاء العلمي']
+                }
+            }
+        };
+
+        // بنك أسئلة غني ومصنف بدقة حسب المرحلة والصف والمادة والمهارة ومستوى الصعوبة
+        const INITIAL_QUESTIONS_BANK = [
+            // ================= الصف الثالث الابتدائي (g3) =================
+            // لغتي g3
+            {
+                id: 'q_g3_ar_1', stage: 'ابتدائي', grade: 'g3', subject: 'لغتي', skill: 'فهم المقروء', difficulty: 'سهل', active: true,
+                text: 'اقرئي النص ثم أجيبي: «تحبُّ نورةُ القراءةَ، فتذهبُ كلَّ أسبوعٍ إلى مكتبةِ المدرسةِ لتستعيرَ قصةً مفيدةً». متى تذهب نورة إلى مكتبة المدرسة؟',
+                options: ['كل يومٍ', 'كل أسبوعٍ', 'كل شهرٍ', 'في الإجازة الصيفية فقط'],
+                correctIndex: 1,
+                explanation: 'ورد في النص صراحةً: «فتذهبُ كلَّ أسبوعٍ إلى مكتبةِ المدرسةِ».'
+            },
+            {
+                id: 'q_g3_ar_2', stage: 'ابتدائي', grade: 'g3', subject: 'لغتي', skill: 'المفردات والمعاني', difficulty: 'سهل', active: true,
+                text: 'ما مرادف كلمة (تعاون) في جملة: «تعاونت الطالبات في تنظيف الفصل»؟',
+                options: ['تخاصمت', 'تساعدت', 'تأخرت', 'تفرقت'],
+                correctIndex: 1,
+                explanation: 'التعاون يعني المساعدة والمشاركة في إنجاز العمل.'
+            },
+            {
+                id: 'q_g3_ar_3', stage: 'ابتدائي', grade: 'g3', subject: 'لغتي', skill: 'القواعد والإملاء', difficulty: 'متوسط', active: true,
+                text: 'أيُّ الكلمات الآتية تنتهي بتاء مربوطة صحيحة؟',
+                options: ['بنتٌ', 'مدرسةٌ', 'بيتٌ', 'وقتٌ'],
+                correctIndex: 1,
+                explanation: 'كلمة (مدرسة) تنطق هاءً عند الوقف وتاءً عند الوصل، لذا تُكتب بالتاء المربوطة (ة).'
+            },
+            {
+                id: 'q_g3_ar_4', stage: 'ابتدائي', grade: 'g3', subject: 'لغتي', skill: 'تحديد الفكرة الرئيسة', difficulty: 'متقدم', active: true,
+                text: '«الماءُ نعمةٌ عظيمةٌ، به تحيا الكائناتُ، ويجبُ علينا ترشيدُ استهلاكِه وعدمُ الإسرافِ فيه». الفكرة الرئيسة للنص هي:',
+                options: ['أنواع البحار والأنهار', 'أهمية الماء ووجوب المحافظة عليه', 'كيفية صنع السفن', 'فصول السنة الأربعة'],
+                correctIndex: 1,
+                explanation: 'النص يتحدث عن فضل الماء وضرورة عدم الإسراف فيه والمحافظة عليه.'
+            },
+            // الرياضيات g3
+            {
+                id: 'q_g3_ma_1', stage: 'ابتدائي', grade: 'g3', subject: 'الرياضيات', skill: 'الأعداد والعمليات', difficulty: 'سهل', active: true,
+                text: 'ما القيمة المنزلية للرقم ٧ في العدد ٤٧٢٥؟',
+                options: ['٧', '٧٠', '٧٠٠', '٧٠٠٠'],
+                correctIndex: 2,
+                explanation: 'الرقم ٧ يقع في منزلة المئات، لذا قيمته المنزلية تساوي ٧٠٠.'
+            },
+            {
+                id: 'q_g3_ma_2', stage: 'ابتدائي', grade: 'g3', subject: 'الرياضيات', skill: 'الجمع والطرح والضرب', difficulty: 'سهل', active: true,
+                text: 'اشترت سارة ٤ علب من الأقلام، في كل علبة ٦ أقلام. كم قلمًا اشترت سارة؟',
+                options: ['١٠ أقلام', '٢٠ قلمًا', '٢٤ قلمًا', '٢٨ قلمًا'],
+                correctIndex: 2,
+                explanation: 'نستخدم عملية الضرب: ٤ × ٦ = ٢٤ قلمًا.'
+            },
+            {
+                id: 'q_g3_ma_3', stage: 'ابتدائي', grade: 'g3', subject: 'الرياضيات', skill: 'الكسور البسيطة', difficulty: 'متوسط', active: true,
+                text: 'قُسّمت فطيرة إلى ٨ أجزاء متطابقة، أكلت هند ٣ أجزاء منها. ما الكسر الذي يمثل ما أكلته هند؟',
+                options: ['٣/٥', '٣/٨', '٥/٨', '٨/٣'],
+                correctIndex: 1,
+                explanation: 'عدد الأجزاء المأكولة (٣) في البسط، والعدد الكلي للأجزاء (٨) في المقام = ٣/٨.'
+            },
+            {
+                id: 'q_g3_ma_4', stage: 'ابتدائي', grade: 'g3', subject: 'الرياضيات', skill: 'القياس والهندسة', difficulty: 'متقدم', active: true,
+                text: 'مربع طول ضلعه ٥ سم، فكم يساوي محيطه؟',
+                options: ['١٠ سم', '١٥ سم', '٢٠ سم', '٢٥ سم'],
+                correctIndex: 2,
+                explanation: 'محيط المربع = مجموع أطوال أضلاعه الأربعة = ٥ + ٥ + ٥ + ٥ = ٢٠ سم.'
+            },
+            // العلوم g3
+            {
+                id: 'q_g3_sc_1', stage: 'ابتدائي', grade: 'g3', subject: 'العلوم', skill: 'الكائنات الحية', difficulty: 'سهل', active: true,
+                text: 'أي جزء في النبات يمتص الماء والأملاح المعدنية من التربة؟',
+                options: ['الأوراق', 'الجذور', 'الأزهار', 'الثمار'],
+                correctIndex: 1,
+                explanation: 'الجذور تثبت النبات في التربة وتمتص الماء والأملاح الذائبة فيها.'
+            },
+            {
+                id: 'q_g3_sc_2', stage: 'ابتدائي', grade: 'g3', subject: 'العلوم', skill: 'الأنظمة البيئية', difficulty: 'سهل', active: true,
+                text: 'ماذا نسمي الحيوانات التي تتغذى على النباتات فقط؟',
+                options: ['آكلات اللحوم', 'آكلات الأعشاب', 'المحللات', 'القارتة'],
+                correctIndex: 1,
+                explanation: 'الحيوانات التي يقتصر غذاؤها على النباتات تُسمى آكلات الأعشاب مثل الأرنب والغزال.'
+            },
+            {
+                id: 'q_g3_sc_3', stage: 'ابتدائي', grade: 'g3', subject: 'العلوم', skill: 'المادة وتغيراتها', difficulty: 'متوسط', active: true,
+                text: 'عندما يتحول الماء السائل إلى بخار ماء بالتسخين، تسمى هذه العملية:',
+                options: ['الانصهار', 'التجمد', 'التبخر', 'التكثف'],
+                correctIndex: 2,
+                explanation: 'التبخر هو تحول المادة من الحالة السائلة إلى الحالة الغازية بفعل الحرارة.'
+            },
+            {
+                id: 'q_g3_sc_4', stage: 'ابتدائي', grade: 'g3', subject: 'العلوم', skill: 'الأرض والفضاء', difficulty: 'متقدم', active: true,
+                text: 'ما السبب الرئيس في حدوث الليل والنهار على سطح الأرض؟',
+                options: ['دوران القمر حول الأرض', 'دوران الأرض حول محورها', 'دوران الشمس حول الأرض', 'تغير الفصول الأربعة'],
+                correctIndex: 1,
+                explanation: 'تدور الأرض حول محورها دورة كاملة كل ٢٤ ساعة فينتج الليل والنهار.'
+            },
+
+            // ================= الصف السادس الابتدائي (g6) =================
+            // لغتي g6
+            {
+                id: 'q_g6_ar_1', stage: 'ابتدائي', grade: 'g6', subject: 'لغتي', skill: 'فهم المقروء', difficulty: 'سهل', active: true,
+                text: '«تُعدُّ المملكةُ العربيةُ السعوديةُ رائدةً في مجالِ الطاقةِ المتجددةِ وحمايةِ البيئةِ عبرَ مبادرةِ السعوديةِ الخضراءِ». ما الهدف من مبادرة السعودية الخضراء وفق النص؟',
+                options: ['زيادة الصناعات الثقيلة', 'حماية البيئة وتنمية الغطاء النباتي', 'بناء الموانئ البحرية', 'تصدير المعادن'],
+                correctIndex: 1,
+                explanation: 'أشار النص إلى أن المملكة رائدة في حماية البيئة عبر مبادرة السعودية الخضراء.'
+            },
+            {
+                id: 'q_g6_ar_2', stage: 'ابتدائي', grade: 'g6', subject: 'لغتي', skill: 'التراكيب اللغوية', difficulty: 'متوسط', active: true,
+                text: 'اختر الإعراب الصحيح لكلمة (المجتهدون) في جملة: «كَرَّمَتِ المديرةُ المجتهدينَ»:',
+                options: ['فاعل مرفوع بالواو', 'مفعول به منصوب بالياء', 'مبتدأ مرفوع بالضمة', 'اسم مجرور بالكسرة'],
+                correctIndex: 1,
+                explanation: 'المجتهدين: مفعول به منصوب وعلامة نصبه الياء لأنه جمع مذكر سالم.'
+            },
+            {
+                id: 'q_g6_ar_3', stage: 'ابتدائي', grade: 'g6', subject: 'لغتي', skill: 'القواعد والإملاء', difficulty: 'متوسط', active: true,
+                text: 'لماذا كُتبت الهمزة المتوسطة على الواو في كلمة (مُؤْمِن)؟',
+                options: ['لأنها مفتوحة وما قبلها مفتوح', 'لأنها ساكنة وما قبلها مضموم', 'لأنها مكسورة', 'لأن ما قبلها ألف مد'],
+                correctIndex: 1,
+                explanation: 'الهمزة ساكنة والحرف الذي قبلها مضموم، والضمة أقوى من السكون فيناسبها الواو.'
+            },
+            {
+                id: 'q_g6_ar_4', stage: 'ابتدائي', grade: 'g6', subject: 'لغتي', skill: 'استنتاج الأفكار', difficulty: 'متقدم', active: true,
+                text: '«مَن جَدَّ وَجَدَ، ومَن سارَ على الدَّربِ وَصَلَ». العلاقة بين شطري هذه الحكمة تدل على:',
+                options: ['التناقض والتضاد', 'السبب والنتيجة', 'التفصيل بعد الإجمال', 'الاستدراك'],
+                correctIndex: 1,
+                explanation: 'الجد والاجتهاد والسير في الطريق الصحيح سبب للوصول إلى النجاح والنتيجة المرجوة.'
+            },
+            // الرياضيات g6
+            {
+                id: 'q_g6_ma_1', stage: 'ابتدائي', grade: 'g6', subject: 'الرياضيات', skill: 'الكسور والأعداد العشرية', difficulty: 'سهل', active: true,
+                text: 'ما ناتج جمع الكسرين العشريين: ٣,٤٥ + ٢,٣٠ ؟',
+                options: ['٥,١٥', '٥,٧٥', '٦,٧٥', '٥,٥٧'],
+                correctIndex: 1,
+                explanation: 'نجمع الأجزاء العشرية: ٠,٤٥ + ٠,٣٠ = ٠,٧٥، والأعداد الصحيحة: ٣ + ٢ = ٥، الناتج ٥,٧٥.'
+            },
+            {
+                id: 'q_g6_ma_2', stage: 'ابتدائي', grade: 'g6', subject: 'الرياضيات', skill: 'الأعداد والعمليات', difficulty: 'متوسط', active: true,
+                text: 'ما قيمة العبارة: ١٨ ÷ ٣ + ٤ × ٢ ؟',
+                options: ['٢٠', '١٤', '١٠', '٢٤'],
+                correctIndex: 1,
+                explanation: 'بحسب ترتيب العمليات نبدأ بالقسمة والضرب: (١٨ ÷ ٣) + (٤ × ٢) = ٦ + ٨ = ١٤.'
+            },
+            {
+                id: 'q_g6_ma_3', stage: 'ابتدائي', grade: 'g6', subject: 'الرياضيات', skill: 'القياس والهندسة', difficulty: 'متوسط', active: true,
+                text: 'مثلث قياس زاويتين فيه ٥٠° و ٦٠°. ما قياس الزاوية الثالثة؟',
+                options: ['٦٠°', '٧٠°', '٨٠°', '٩٠°'],
+                correctIndex: 1,
+                explanation: 'مجموع زوايا المثلث ١٨٠°، إذن الزاوية الثالثة = ١٨٠ - (٥٠ + ٦٠) = ٧٠°.'
+            },
+            {
+                id: 'q_g6_ma_4', stage: 'ابتدائي', grade: 'g6', subject: 'الرياضيات', skill: 'حل المسائل اللفظية', difficulty: 'متقدم', active: true,
+                text: 'إذا كان ثمن ٣ دفاتر ١٥ ريالًا، فكم ريالًا نحتاج لشراء ٧ دفاتر من النوع نفسه؟',
+                options: ['٢١ ريالًا', '٣٠ ريالًا', '٣٥ ريالًا', '٤٥ ريالًا'],
+                correctIndex: 2,
+                explanation: 'ثمن الدفتر الواحد = ١٥ ÷ ٣ = ٥ ريالات. ثمن ٧ دفاتر = ٧ × ٥ = ٣٥ ريالًا.'
+            },
+            // العلوم g6
+            {
+                id: 'q_g6_sc_1', stage: 'ابتدائي', grade: 'g6', subject: 'العلوم', skill: 'الكائنات الحية ووظائفها', difficulty: 'سهل', active: true,
+                text: 'ما الوحدة الأساسية لبناء أجسام جميع الكائنات الحية؟',
+                options: ['النسيج', 'الخلية', 'العضو', 'الجهاز'],
+                correctIndex: 1,
+                explanation: 'الخلية هي أصغر وحدة بناء ووظيفة في أجسام الكائنات الحية.'
+            },
+            {
+                id: 'q_g6_sc_2', stage: 'ابتدائي', grade: 'g6', subject: 'العلوم', skill: 'الطاقة والقوى والحركة', difficulty: 'متوسط', active: true,
+                text: 'ما القوة التي تسبب سقوط الأجسام نحو سطح الأرض عند تركها؟',
+                options: ['قوة الاحتكاك', 'قوة الجاذبية الأرضية', 'القوة المغناطيسية', 'قوة الدفع'],
+                correctIndex: 1,
+                explanation: 'الجاذبية الأرضية هي قوة سحب تجذب جميع الأجسام نحو مركز الأرض.'
+            },
+            {
+                id: 'q_g6_sc_3', stage: 'ابتدائي', grade: 'g6', subject: 'العلوم', skill: 'المادة وتغيراتها', difficulty: 'متوسط', active: true,
+                text: 'أي مما يلي يُعدّ تغيرًا كيميائيًا للمادة؟',
+                options: ['انصهار الجليد', 'تمزيق الورق', 'صدأ الحديد', 'ذوبان السكر في الماء'],
+                correctIndex: 2,
+                explanation: 'صدأ الحديد ينتج عنه مادة جديدة (أكسيد الحديد) تختلف في خواصها عن الحديد الأصلي.'
+            },
+            {
+                id: 'q_g6_sc_4', stage: 'ابتدائي', grade: 'g6', subject: 'العلوم', skill: 'الأنظمة البيئية', difficulty: 'متقدم', active: true,
+                text: 'في السلسلة الغذائية: (عشب ← أرنب ← ثعلب)، ماذا يحدث لأعداد الأرانب إذا تناقصت الثعالب بشكل مفاجئ؟',
+                options: ['تقل أعداد الأرانب', 'تزداد أعداد الأرانب مؤقتًا', 'تنقرض الأعشاب فورًا', 'لا تتأثر السلسلة الغذائية'],
+                correctIndex: 1,
+                explanation: 'بنقص المفترسات (الثعالب) يقل افتراس الأرانب فتزداد أعدادها مؤقتًا.'
+            },
+
+            // ================= الصف الثالث المتوسط (g9) =================
+            // لغتي g9
+            {
+                id: 'q_g9_ar_1', stage: 'متوسط', grade: 'g9', subject: 'لغتي', skill: 'فهم المقروء', difficulty: 'سهل', active: true,
+                text: '«الذكاءُ الاصطناعيُّ أداةٌ معرفيةٌ متقدمةٌ تُسهمُ في تسريعِ الابتكارِ، ولكنَّها لا تُغني عن العقلِ البشريِّ المبدعِ الذي يوجِّهُها ويضبطُ أخلاقياتِها». الفكرة المحورية في العبارة هي:',
+                options: ['الذكاء الاصطناعي سيلغي دور الإنسان تمامًا', 'التكامل بين الذكاء الاصطناعي وتوجيه العقل البشري', 'صعوبة تعلم التقنيات الحديثة', 'تاريخ صناعة الحواسيب'],
+                correctIndex: 1,
+                explanation: 'النص يوازن بين أهمية الذكاء الاصطناعي وضرورة قيادة العقل البشري وأخلاقياته له.'
+            },
+            {
+                id: 'q_g9_ar_2', stage: 'متوسط', grade: 'g9', subject: 'لغتي', skill: 'التراكيب اللغوية والنحو', difficulty: 'متوسط', active: true,
+                text: 'حدد اسم الفاعل من الفعل الثلاثي (كَتَبَ) في الجملة الآتية: «الطالبةُ كاتبةٌ للدرسِ بإتقانٍ»:',
+                options: ['الطالبة', 'كاتبة', 'الدرس', 'إتقان'],
+                correctIndex: 1,
+                explanation: 'اسم الفاعل من الفعل الثلاثي يصاغ على وزن (فاعل)، مثل: كتب ← كاتب / كاتبة.'
+            },
+            {
+                id: 'q_g9_ar_3', stage: 'متوسط', grade: 'g9', subject: 'لغتي', skill: 'تحليل النصوص الأدبية', difficulty: 'متقدم', active: true,
+                text: 'في قول الشاعر: «العِلمُ يبني بيوتًا لا عمادَ لها»، ما نوع الصورة البيانية في (العلم يبني بيوتًا)؟',
+                options: ['تشبيه بليغ', 'استعارة مكنية', 'طباق إيجاب', 'جناس تام'],
+                correctIndex: 1,
+                explanation: 'شبه الشاعر العلم بالمهندس أو الباني الذي يبني البيوت، وحذف المشبه به وأبقى صفة البناء على سبيل الاستعارة المكنية.'
+            },
+            {
+                id: 'q_g9_ar_4', stage: 'متوسط', grade: 'g9', subject: 'لغتي', skill: 'الإملاء والكتابة', difficulty: 'متوسط', active: true,
+                text: 'أي الجمل الآتية خالية من الأخطاء الإملائية في رسم الألف اللينة؟',
+                options: ['دعى المؤمن ربه', 'سما الوطن بأبنائه', 'قضا القاضي بالعدل', 'بنا المهندس الجسر'],
+                correctIndex: 1,
+                explanation: 'الفعل (سما) أصل ألفه واو (يسمو) لذا تُرسم ألفًا قائمة (ا)، بينما دعا وقضى وبنى أصلها ياء أو واو كما في القاعدة.'
+            },
+            // الرياضيات g9
+            {
+                id: 'q_g9_ma_1', stage: 'متوسط', grade: 'g9', subject: 'الرياضيات', skill: 'الجبر والمعادلات', difficulty: 'سهل', active: true,
+                text: 'ما حل المعادلة الخطية: ٣س - ٥ = ١٦ ؟',
+                options: ['س = ٥', 'س = ٧', 'س = ٩', 'س = ٢١'],
+                correctIndex: 1,
+                explanation: 'بإضافة ٥ للطرفين: ٣س = ٢١، ثم بالقسمة على ٣ نحصل على: س = ٧.'
+            },
+            {
+                id: 'q_g9_ma_2', stage: 'متوسط', grade: 'g9', subject: 'الرياضيات', skill: 'الهندسة والقياس', difficulty: 'متوسط', active: true,
+                text: 'مثلث قائم الزاوية طولا ضلعي القائمة فيه ٦ سم و ٨ سم. ما طول الوتر؟',
+                options: ['١٠ سم', '١٢ سم', '١٤ سم', '٤٨ سم'],
+                correctIndex: 0,
+                explanation: 'حسب نظرية فيثاغورس: الوتر² = ٦² + ٨² = ٣٦ + ٦٤ = ١٠٠، إذن الوتر = √١٠٠ = ١٠ سم.'
+            },
+            {
+                id: 'q_g9_ma_3', stage: 'متوسط', grade: 'g9', subject: 'الرياضيات', skill: 'الإحصاء والاحتمالات', difficulty: 'متوسط', active: true,
+                text: 'أُلقيت قطعة نقد ومكعب أرقام مرة واحدة. ما احتمال ظهور (شعار) والعدد (٦) معًا؟',
+                options: ['١/٢', '١/٦', '١/٨', '١/١٢'],
+                correctIndex: 3,
+                explanation: 'الحادثتان مستقلتان: احتمال الشعار (١/٢) × احتمال العدد ٦ (١/٦) = ١/١٢.'
+            },
+            {
+                id: 'q_g9_ma_4', stage: 'متوسط', grade: 'g9', subject: 'الرياضيات', skill: 'التفكير الرياضي وحل المسائل', difficulty: 'متقدم', active: true,
+                text: 'إذا زاد طول ضلع مربع بنسبة ١٠٠٪، فكم تزيد مساحته؟',
+                options: ['١٠٠٪', '٢٠٠٪', '٣٠٠٪', '٤٠٠٪'],
+                correctIndex: 2,
+                explanation: 'إذا كان الضلع ١ فالمساحة ١. عند زيادة الضلع بنسبة ١٠٠٪ يصبح ٢ فتصبح المساحة الجديدة ٤، أي زادت بمقدار ٣ أضعاف (٣٠٠٪).'
+            },
+            // العلوم g9
+            {
+                id: 'q_g9_sc_1', stage: 'متوسط', grade: 'g9', subject: 'العلوم', skill: 'المادة والتفاعلات الكيميائية', difficulty: 'سهل', active: true,
+                text: 'ما الجسيمات الذرية التي تحمل شحنة كهربائية موجبة وتوجد داخل نواة الذرة؟',
+                options: ['الإلكترونات', 'البروتونات', 'النيوترونات', 'الفوتونات'],
+                correctIndex: 1,
+                explanation: 'البروتونات جسيمات موجبة الشحنة داخل النواة، بينما النيوترونات متعادلة والإلكترونات سالبة تدور حول النواة.'
+            },
+            {
+                id: 'q_g9_sc_2', stage: 'متوسط', grade: 'g9', subject: 'العلوم', skill: 'الطاقة والقوى والحركة', difficulty: 'متوسط', active: true,
+                text: 'إذا أثرت قوة محصلة مقدارها ٢٠ نيوتن في جسم كتلته ٤ كجم، فما مقدار تسارع الجسم وفق قانون نيوتن الثاني؟',
+                options: ['٥ م/ث²', '١٦ م/ث²', '٢٤ م/ث²', '٨٠ م/ث²'],
+                correctIndex: 0,
+                explanation: 'قانون نيوتن الثاني: التسارع (ت) = القوة (ق) ÷ الكتلة (ك) = ٢٠ ÷ ٤ = ٥ م/ث².'
+            },
+            {
+                id: 'q_g9_sc_3', stage: 'متوسط', grade: 'g9', subject: 'العلوم', skill: 'جسم الإنسان والصحة', difficulty: 'متوسط', active: true,
+                text: 'ما الجزء المسؤول عن نقل السيالات العصبية بعيدًا عن جسم الخلية العصبية؟',
+                options: ['الشجيرات العصبية', 'المحور الأسطواني', 'النواة', 'الغشاء البلازمي'],
+                correctIndex: 1,
+                explanation: 'المحور الأسطواني ينقل السيالات العصبية بعيدًا عن جسم الخلية العصبية نحو خلايا أخرى.'
+            },
+            {
+                id: 'q_g9_sc_4', stage: 'متوسط', grade: 'g9', subject: 'العلوم', skill: 'التجارب والاستقصاء العلمي', difficulty: 'متقدم', active: true,
+                text: 'في تجربة لدراسة أثر درجة الحرارة في سرعة ذوبان الملح في الماء، ما المتغير المستقل في هذه التجربة؟',
+                options: ['كمية الملح', 'حجم الماء', 'درجة حرارة الماء', 'نوع الكأس الزجاجي'],
+                correctIndex: 2,
+                explanation: 'المتغير المستقل هو العامل الذي يقوم الباحث بتغييره عمدًا لاختبار أثره، وهو هنا درجة حرارة الماء.'
+            }
+        ];
+
+        // القائمة الكاملة للفهرس التفاعلي (20 قسمًا)
+        const SIDEBAR_SECTIONS = [
+            { id: 'home', num: 1, title: 'الصفحة الرئيسية', icon: 'fa-house' },
+            { id: 'about', num: 2, title: 'عن مشروع دوري أبطال نافس', icon: 'fa-circle-info' },
+            { id: 'goals', num: 3, title: 'أهداف المشروع', icon: 'fa-bullseye' },
+            { id: 'register', num: 4, title: 'ابدئي رحلتكِ – تسجيل الطالبة', icon: 'fa-user-plus' },
+            { id: 'dashboard', num: 5, title: 'لوحة الطالبة الشخصية', icon: 'fa-gauge-high' },
+            { id: 'practice-hub', num: 6, title: 'التدريبات التفاعلية', icon: 'fa-dumbbell' },
+            { id: 'practice-arabic', num: 7, title: 'تدريبات لغتي', icon: 'fa-book-open' },
+            { id: 'practice-math', num: 8, title: 'تدريبات الرياضيات', icon: 'fa-calculator' },
+            { id: 'practice-science', num: 9, title: 'تدريبات العلوم', icon: 'fa-flask' },
+            { id: 'exams-hub', num: 10, title: 'الاختبارات المحاكية لنافس', icon: 'fa-stopwatch' },
+            { id: 'exam-arabic', num: 11, title: 'اختبار لغتي', icon: 'fa-feather-pointed' },
+            { id: 'exam-math', num: 12, title: 'اختبار الرياضيات', icon: 'fa-square-root-variable' },
+            { id: 'exam-science', num: 13, title: 'اختبار العلوم', icon: 'fa-atom' },
+            { id: 'exam-comprehensive', num: 14, title: 'الاختبار الشامل للمواد الثلاث', icon: 'fa-trophy' },
+            { id: 'results-analysis', num: 15, title: 'النتائج وتحليل الأداء', icon: 'fa-chart-pie' },
+            { id: 'certificates', num: 16, title: 'شهادات الإنجاز', icon: 'fa-certificate' },
+            { id: 'honor-board', num: 17, title: 'لوحة شرف الأبطال', icon: 'fa-crown' },
+            { id: 'achievements', num: 18, title: 'إنجازاتي وسجل محاولاتي', icon: 'fa-medal' },
+            { id: 'tips', num: 19, title: 'نصائح وإرشادات الاستعداد لنافس', icon: 'fa-lightbulb' },
+            { id: 'faq', num: 20, title: 'الأسئلة الشائعة وطريقة الاستخدام', icon: 'fa-circle-question' }
+        ];
+
+        /*************************************************************************
+         * 2. إدارة الحالة العامة والتخزين السحابي (Supabase + Local Persistence)
+         *************************************************************************/
+        let supabaseClient = null;
+        let isCloudConnected = false;
+
+        const AppState = {
+            currentRoute: 'home',
+            currentStudent: null, // بيانات الطالبة المسجلة حاليًا
+            isAdminAuthenticated: false,
+            adminRole: 'مدير المنصة',
+            schoolSettings: { ...DEFAULT_SCHOOL_SETTINGS },
+            students: [],
+            questions: [],
+            practiceSessions: [],
+            examResults: [],
+            certificates: [],
+            // حالة جلسة التدريب النشطة
+            activePractice: null,
+            // حالة الاختبار المحاكي النشط
+            activeExam: null,
+            examTimerInterval: null,
+            // آخر نتيجة للعرض في صفحة تحليل الأداء
+            lastViewedResult: null,
+            lastViewedCertificate: null
+        };
+
+        // تحميل البيانات من التخزين الدائم ومحاولة الاتصال بـ Supabase إن وُجدت مفاتيح الربط
+        async function initAppStorage() {
+            try {
+                const savedSettings = localStorage.getItem('nafs_school_settings');
+                if (savedSettings) AppState.schoolSettings = { ...DEFAULT_SCHOOL_SETTINGS, ...JSON.parse(savedSettings) };
+
+                const savedStudents = localStorage.getItem('nafs_students');
+                if (savedStudents) AppState.students = JSON.parse(savedStudents);
+
+                const savedQuestions = localStorage.getItem('nafs_questions');
+                if (savedQuestions && JSON.parse(savedQuestions).length > 0) {
+                    AppState.questions = JSON.parse(savedQuestions);
+                } else {
+                    AppState.questions = [...INITIAL_QUESTIONS_BANK];
+                    localStorage.setItem('nafs_questions', JSON.stringify(AppState.questions));
+                }
+
+                const savedPractice = localStorage.getItem('nafs_practice_sessions');
+                if (savedPractice) AppState.practiceSessions = JSON.parse(savedPractice);
+
+                const savedResults = localStorage.getItem('nafs_exam_results');
+                if (savedResults) AppState.examResults = JSON.parse(savedResults);
+
+                const savedCerts = localStorage.getItem('nafs_certificates');
+                if (savedCerts) AppState.certificates = JSON.parse(savedCerts);
+
+                // استعادة جلسة الطالبة الحالية إن وجدت
+                const activeStudentId = sessionStorage.getItem('nafs_active_student_id');
+                if (activeStudentId) {
+                    const found = AppState.students.find(s => s.id === activeStudentId && s.active !== false);
+                    if (found) AppState.currentStudent = found;
+                }
+
+                // التحقق من إعدادات Supabase المحفوظة للربط السحابي الحقيقي
+                const sbUrl = localStorage.getItem('nafs_supabase_url');
+                const sbKey = localStorage.getItem('nafs_supabase_anon_key');
+                if (sbUrl && sbKey) {
+                    await connectToSupabase(sbUrl, sbKey, true);
+                }
+            } catch (err) {
+                console.error('خطأ في تهيئة البيانات:', err);
+            }
+            updateOfficialHeaderUI();
+            updateStudentHeaderUI();
+        }
+
+        function saveAllToStorage() {
+            try {
+                localStorage.setItem('nafs_school_settings', JSON.stringify(AppState.schoolSettings));
+                localStorage.setItem('nafs_students', JSON.stringify(AppState.students));
+                localStorage.setItem('nafs_questions', JSON.stringify(AppState.questions));
+                localStorage.setItem('nafs_practice_sessions', JSON.stringify(AppState.practiceSessions));
+                localStorage.setItem('nafs_exam_results', JSON.stringify(AppState.examResults));
+                localStorage.setItem('nafs_certificates', JSON.stringify(AppState.certificates));
+            } catch (e) {
+                console.error('فشل الحفظ المحلي:', e);
+            }
+        }
+
+        // الاتصال بقاعدة بيانات Supabase السحابية ومزامنة الجداول
+        async function connectToSupabase(url, anonKey, silent = false) {
+            try {
+                if (!window.supabase) throw new Error('مكتبة Supabase غير محملة');
+                supabaseClient = window.supabase.createClient(url, anonKey);
+
+                // اختبار الاتصال الفعلي عبر جلب إعدادات المدرسة
+                const { data: settingsData, error } = await supabaseClient.from('school_settings').select('*').limit(1);
+                if (error) {
+                    // قد تكون الجداول لم تُنشأ بعد في مشروع Supabase
+                    if (!silent) showToast('تم الاتصال بالخادم، يرجى تنفيذ كود SQL لإنشاء الجداول الـ 18 في Supabase.', 'warning');
+                    updateDbBadge(false, 'متصل (بانتظار إنشاء الجداول)');
+                    return false;
+                }
+
+                isCloudConnected = true;
+                localStorage.setItem('nafs_supabase_url', url);
+                localStorage.setItem('nafs_supabase_anon_key', anonKey);
+                updateDbBadge(true, 'متصل بالسحابة (Supabase PostgreSQL)');
+
+                // مزامنة البيانات من السحابة إلى الواجهة
+                await syncFromCloud();
+                if (!silent) showToast('تم الربط السحابي مع قاعدة بيانات Supabase بنجاح!', 'success');
+                return true;
+            } catch (err) {
+                isCloudConnected = false;
+                updateDbBadge(false, 'تعذر الربط السحابي (يعمل محليًا)');
+                if (!silent) showToast('تعذر الاتصال بـ Supabase: تأكدي من صحة الرابط والمفتاح.', 'error');
+                return false;
+            }
+        }
+
+        async function syncFromCloud() {
+            if (!isCloudConnected || !supabaseClient) return;
+            try {
+                const [stRes, qRes, resRes, certRes, setRes] = await Promise.all([
+                    supabaseClient.from('students').select('*'),
+                    supabaseClient.from('questions').select('*'),
+                    supabaseClient.from('results').select('*'),
+                    supabaseClient.from('certificates').select('*'),
+                    supabaseClient.from('school_settings').select('*').limit(1)
+                ]);
+
+                if (setRes.data && setRes.data.length > 0) {
+                    AppState.schoolSettings = { ...AppState.schoolSettings, ...setRes.data[0] };
+                }
+                if (stRes.data && stRes.data.length > 0) AppState.students = stRes.data;
+                if (qRes.data && qRes.data.length > 0) AppState.questions = qRes.data;
+                if (resRes.data && resRes.data.length > 0) AppState.examResults = resRes.data;
+                if (certRes.data && certRes.data.length > 0) AppState.certificates = certRes.data;
+
+                saveAllToStorage();
+                updateOfficialHeaderUI();
+            } catch (e) {
+                console.warn('ملاحظة أثناء المزامنة السحابية:', e);
+            }
+        }
+
+        async function pushRecordToCloud(tableName, record) {
+            if (!isCloudConnected || !supabaseClient) return;
+            try {
+                await supabaseClient.from(tableName).upsert(record);
+            } catch (e) {
+                console.warn(`تعذر مزامنة السجل في جدول ${tableName}:`, e);
+ 

@@ -1,865 +1,605 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة دوري أبطال نافس | نافس بمهارتك… وكن بطل نافس!</title>
-    <!-- خطوط عربية احترافية -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- مكتبة Supabase للربط السحابي الفعلي -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- مكتبة الرسوم البيانية Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- مكتبة تصدير الشهادات كصورة PNG -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- مكتبة مؤثرات الاحتفال عند الإنجاز -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- أيقونات FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🏆 منصة دوري أبطال نافس | نافس بمهارتك… وكن بطل نافس!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --sky-50: #f0f9ff;
+      --sky-100: #e0f2fe;
+      --sky-200: #bae6fd;
+      --sky-400: #38bdf8;
+      --sky-500: #0ea5e9;
+      --sky-600: #0284c7;
+      --sky-700: #0369a1;
+      --sky-900: #0c4a6e;
+      --navy-900: #0f294a;
+      --gold-100: #fef9c3;
+      --gold-300: #fde047;
+      --gold-400: #facc15;
+      --gold-500: #eab308;
+      --gold-600: #ca8a04;
+      --gold-700: #a16207;
+      --white: #ffffff;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-500: #64748b;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --rose-500: #f43f5e;
+      --amber-500: #f59e0b;
+      --shadow-3d: 0 10px 25px -5px rgba(2, 132, 199, 0.14), 0 6px 0 #bae6fd;
+      --shadow-gold-3d: 0 10px 25px -5px rgba(234, 179, 8, 0.25), 0 5px 0 #ca8a04;
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+    }
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        cairo: ['Cairo', 'sans-serif'],
-                        tajawal: ['Tajawal', 'sans-serif'],
-                    },
-                    colors: {
-                        nafs: {
-                            sky: '#0ea5e9',
-                            skyDark: '#0284c7',
-                            skyLight: '#e0f2fe',
-                            navy: '#0f294a',
-                            navyDark: '#091a30',
-                            gold: '#eab308',
-                            goldLight: '#fef08a',
-                            goldBright: '#facc15',
-                            orange: '#f59e0b',
-                            green: '#16a34a',
-                            cyan: '#06b6d4'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background: linear-gradient(180deg, #e0f2fe 0%, #f8fafc 30%, #f0f9ff 100%);
+      color: var(--slate-800);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-    <style>
-        body {
-            font-family: 'Cairo', 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #fefce8 100%);
-            color: #0f294a;
-            overflow-x: hidden;
-        }
+    /* 3D Buttons & Cards */
+    .btn-3d {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 14px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 800;
+      font-size: 0.98rem;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-3d:active { transform: translateY(4px); }
+    .btn-sky {
+      background: linear-gradient(180deg, var(--sky-400) 0%, var(--sky-600) 100%);
+      color: #fff;
+      box-shadow: 0 5px 0 var(--sky-900), 0 10px 20px rgba(2, 132, 199, 0.28);
+    }
+    .btn-sky:hover { filter: brightness(1.06); }
+    .btn-sky:active { box-shadow: 0 1px 0 var(--sky-900); }
 
-        /* تصميم بطاقات ثلاثية الأبعاد 3D */
-        .card-3d {
-            background: rgba(255, 255, 255, 0.96);
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 25px -5px rgba(15, 41, 74, 0.08), 0 8px 10px -6px rgba(14, 165, 233, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(14, 165, 233, 0.18);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+    .btn-gold {
+      background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
+      color: var(--navy-900);
+      box-shadow: 0 5px 0 var(--gold-700), 0 10px 20px rgba(234, 179, 8, 0.3);
+    }
+    .btn-gold:hover { filter: brightness(1.05); }
+    .btn-gold:active { box-shadow: 0 1px 0 var(--gold-700); }
 
-        .card-3d:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 35px -10px rgba(14, 165, 233, 0.2), 0 0 15px rgba(234, 179, 8, 0.15);
-            border-color: rgba(234, 179, 8, 0.5);
-        }
+    .btn-white {
+      background: #fff;
+      color: var(--sky-700);
+      border: 2px solid var(--sky-200);
+      box-shadow: 0 4px 0 var(--sky-200);
+    }
+    .btn-white:hover { background: var(--sky-50); }
+    .btn-white:active { box-shadow: 0 1px 0 var(--sky-200); }
 
-        /* أزرار ثلاثية الأبعاد تفاعلية */
-        .btn-3d-sky {
-            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
-            box-shadow: 0 5px 0 #0369a1, 0 10px 20px rgba(2, 132, 199, 0.3);
-            transition: all 0.15s ease;
-        }
-        .btn-3d-sky:hover {
-            filter: brightness(1.05);
-            transform: translateY(-2px);
-        }
-        .btn-3d-sky:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0 #0369a1, 0 4px 10px rgba(2, 132, 199, 0.2);
-        }
+    .btn-emerald {
+      background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+      color: #fff;
+      box-shadow: 0 5px 0 #065f46;
+    }
+    .btn-danger {
+      background: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
+      color: #fff;
+      box-shadow: 0 4px 0 #881337;
+    }
+    .btn-sm { padding: 7px 14px; font-size: 0.85rem; border-radius: 10px; }
 
-        .btn-3d-gold {
-            background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
-            color: #0f294a;
-            box-shadow: 0 5px 0 #a16207, 0 10px 20px rgba(234, 179, 8, 0.35);
-            transition: all 0.15s ease;
-        }
-        .btn-3d-gold:hover {
-            filter: brightness(1.05);
-            transform: translateY(-2px);
-        }
-        .btn-3d-gold:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0 #a16207, 0 4px 10px rgba(234, 179, 8, 0.2);
-        }
+    .card-3d {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: var(--radius-xl);
+      border: 2px solid var(--sky-100);
+      box-shadow: var(--shadow-3d);
+      padding: 24px;
+      transition: transform 0.25s ease;
+    }
+    .card-gold {
+      background: linear-gradient(145deg, #ffffff 0%, #fefce8 100%);
+      border: 2px solid var(--gold-400);
+      box-shadow: var(--shadow-gold-3d);
+    }
 
-        .btn-3d-navy {
-            background: linear-gradient(180deg, #1e3a8a 0%, #0f294a 100%);
-            color: #ffffff;
-            box-shadow: 0 5px 0 #061121, 0 10px 20px rgba(15, 41, 74, 0.3);
-            transition: all 0.15s ease;
-        }
-        .btn-3d-navy:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0 #061121;
-        }
+    /* Top Official School Header */
+    .official-topbar {
+      background: linear-gradient(90deg, var(--navy-900) 0%, var(--sky-800, #075985) 50%, var(--navy-900) 100%);
+      color: #fff;
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 3px solid var(--gold-400);
+    }
+    .official-topbar .school-meta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+    .badge-db {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 0.78rem;
+      background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.28);
+    }
+    .dot-live { width: 9px; height: 9px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; }
+    .dot-warn { width: 9px; height: 9px; border-radius: 50%; background: #facc15; box-shadow: 0 0 8px #facc15; }
 
-        /* حركة طفو ثلاثية الأبعاد للعناصر */
-        @keyframes float3d {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
-        }
-        .animate-float {
-            animation: float3d 4s ease-in-out infinite;
-        }
+    /* Main Navbar */
+    .main-header {
+      position: sticky; top: 0; z-index: 900;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--sky-100);
+      padding: 10px 20px;
+      box-shadow: 0 4px 20px rgba(12, 74, 110, 0.08);
+    }
+    .header-inner {
+      max-width: 1420px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    }
+    .brand-box { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .nafs-logo-wrap {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: #fff; border: 2px solid var(--gold-400);
+      box-shadow: 0 4px 10px rgba(234, 179, 8, 0.25);
+      display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 3px;
+    }
+    .nafs-logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
+    .brand-title h1 { font-size: 1.25rem; font-weight: 900; color: var(--navy-900); line-height: 1.2; }
+    .brand-title span { font-size: 0.82rem; font-weight: 700; color: var(--sky-600); }
 
-        /* شريط التمرير المخصص */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #e0f2fe;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #0284c7;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0f294a;
-        }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .student-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--sky-50); border: 2px solid var(--sky-200);
+      padding: 6px 14px; border-radius: 999px; font-weight: 700; color: var(--navy-900);
+      font-size: 0.88rem;
+    }
 
-        /* تنسيق شهادة الإنجاز A4 أفقي للطباعة */
-        .certificate-a4 {
-            width: 100%;
-            max-width: 960px;
-            aspect-ratio: 1.414 / 1;
-            background: radial-gradient(circle at center, #ffffff 60%, #f0f9ff 100%);
-            border: 12px solid #0f294a;
-            outline: 4px solid #eab308;
-            outline-offset: -18px;
-            position: relative;
-            box-shadow: 0 25px 50px -12px rgba(15, 41, 74, 0.25);
-        }
+    /* Layout Grid: Interactive Index + Content */
+    .app-shell {
+      max-width: 1420px;
+      margin: 20px auto;
+      padding: 0 16px 60px;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
 
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            #printable-certificate-area, #printable-certificate-area * {
-                visibility: visible;
-            }
-            #printable-certificate-area {
-                position: fixed;
-                left: 0;
-                top: 0;
-                width: 100vw;
-                height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: white;
-                z-index: 99999;
-            }
-        }
-    </style>
+    /* Sidebar Index */
+    .sidebar-index {
+      background: #fff;
+      border-radius: var(--radius-xl);
+      border: 2px solid var(--sky-200);
+      box-shadow: var(--shadow-3d);
+      padding: 18px 14px;
+      position: sticky;
+      top: 88px;
+      max-height: calc(100vh - 105px);
+      overflow-y: auto;
+    }
+    .sidebar-index::-webkit-scrollbar { width: 6px; }
+    .sidebar-index::-webkit-scrollbar-thumb { background: var(--sky-200); border-radius: 10px; }
+
+    .index-header {
+      background: linear-gradient(135deg, var(--sky-600), var(--navy-900));
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      border-bottom: 3px solid var(--gold-400);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .index-header h2 { font-size: 0.98rem; font-weight: 800; }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 12px; border-radius: 12px;
+      font-size: 0.88rem; font-weight: 700; color: var(--slate-700);
+      cursor: pointer; transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover { background: var(--sky-50); color: var(--sky-700); transform: translateX(-3px); }
+    .nav-item.active {
+      background: linear-gradient(90deg, var(--sky-500), var(--sky-600));
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+    .nav-num {
+      min-width: 24px; height: 24px; border-radius: 8px;
+      background: var(--sky-100); color: var(--sky-700);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.76rem; font-weight: 800;
+    }
+    .nav-item.active .nav-num { background: var(--gold-400); color: var(--navy-900); }
+    .nav-sub { padding-right: 28px; font-size: 0.83rem; }
+
+    .admin-nav-box {
+      margin-top: 14px; padding-top: 12px; border-top: 2px dashed var(--gold-400);
+    }
+    .admin-nav-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--navy-900), #1e3a8a);
+      color: var(--gold-300);
+      border: 2px solid var(--gold-400);
+      padding: 11px 14px; border-radius: 14px;
+      font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 0.92rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(15, 41, 74, 0.2);
+    }
+
+    /* Content Sections */
+    .section-view { display: none; animation: fadeSlide 0.3s ease; }
+    .section-view.active { display: block; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero 3D Banner */
+    .hero-3d {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 45%, #0f294a 100%);
+      border-radius: 28px;
+      padding: 34px 30px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid var(--gold-400);
+      box-shadow: 0 18px 36px rgba(12, 74, 110, 0.25), 0 8px 0 var(--gold-600);
+      margin-bottom: 24px;
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.35fr 0.85fr; gap: 24px; align-items: center; position: relative; z-index: 2;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(250, 204, 21, 0.2); border: 1.5px solid var(--gold-400);
+      color: var(--gold-300); padding: 6px 16px; border-radius: 999px;
+      font-weight: 800; font-size: 0.9rem; margin-bottom: 12px;
+    }
+    .hero-3d h2 { font-size: 2.15rem; font-weight: 900; line-height: 1.25; margin-bottom: 8px; }
+    .hero-slogan {
+      font-size: 1.2rem; font-weight: 800; color: var(--gold-300); margin-bottom: 10px;
+    }
+    .hero-quote {
+      background: rgba(255,255,255,0.12); border-right: 4px solid var(--gold-400);
+      padding: 10px 16px; border-radius: 12px; font-weight: 700; margin-bottom: 16px;
+      font-size: 0.98rem;
+    }
+    .hero-cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+
+    /* Stats & Grid Cards */
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 22px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 22px; }
+
+    .stat-card {
+      background: #fff; border-radius: 20px; padding: 18px;
+      border: 2px solid var(--sky-100); box-shadow: 0 6px 0 var(--sky-100);
+      text-align: center;
+    }
+    .stat-icon {
+      width: 50px; height: 50px; border-radius: 14px; margin: 0 auto 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+      background: var(--sky-50); border: 2px solid var(--sky-200);
+    }
+    .stat-val { font-size: 1.9rem; font-weight: 900; color: var(--navy-900); }
+    .stat-lbl { font-size: 0.86rem; font-weight: 700; color: var(--slate-500); }
+
+    .subject-card {
+      border-radius: 22px; padding: 22px; background: #fff;
+      border: 2px solid var(--sky-200); box-shadow: var(--shadow-3d);
+      display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
+    }
+    .subject-card.arabic { border-top: 6px solid #0ea5e9; }
+    .subject-card.math { border-top: 6px solid #eab308; }
+    .subject-card.science { border-top: 6px solid #10b981; }
+
+    .skill-pill {
+      display: inline-block; background: var(--sky-50); color: var(--sky-700);
+      border: 1px solid var(--sky-200); padding: 4px 10px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 700; margin: 3px;
+    }
+
+    /* Forms & Inputs */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-weight: 800; color: var(--navy-900); margin-bottom: 6px; font-size: 0.92rem; }
+    .form-control {
+      width: 100%; padding: 11px 14px; border-radius: 12px;
+      border: 2px solid var(--sky-200); font-family: 'Cairo', sans-serif;
+      font-size: 0.95rem; font-weight: 600; color: var(--slate-800); background: #fff;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus { outline: none; border-color: var(--sky-500); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15); }
+
+    /* Interactive Question Card */
+    .quiz-option {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px; border-radius: 14px;
+      border: 2px solid var(--sky-200); background: #fff;
+      margin-bottom: 10px; cursor: pointer; font-weight: 700; font-size: 1rem;
+      transition: all 0.16s ease;
+    }
+    .quiz-option:hover { background: var(--sky-50); border-color: var(--sky-400); }
+    .quiz-option.selected { background: var(--sky-100); border-color: var(--sky-600); box-shadow: 0 4px 0 var(--sky-600); }
+    .quiz-option.correct { background: #d1fae5; border-color: #059669; color: #065f46; }
+    .quiz-option.wrong { background: #ffe4e6; border-color: #e11d48; color: #881337; }
+    .opt-letter {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: var(--sky-500); color: #fff;
+      display: inline-flex; align-items: center; justify-content: center; font-weight: 900;
+    }
+
+    /* Exam Navigator Grid */
+    .q-nav-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    .q-dot {
+      width: 38px; height: 38px; border-radius: 10px; border: 2px solid var(--sky-200);
+      background: #fff; font-weight: 800; cursor: pointer; position: relative;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .q-dot.current { border-color: var(--navy-900); background: var(--sky-500); color: #fff; }
+    .q-dot.answered { background: #d1fae5; border-color: #10b981; color: #065f46; }
+    .q-dot.flagged::after {
+      content: "🚩"; position: absolute; top: -8px; left: -6px; font-size: 0.72rem;
+    }
+
+    /* A4 Landscape Certificate */
+    .cert-wrapper {
+      overflow-x: auto; padding: 12px 0;
+    }
+    .cert-a4 {
+      width: 1020px; height: 720px; margin: 0 auto;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #fefce8 100%);
+      border: 14px solid #0f294a;
+      outline: 5px solid #eab308;
+      outline-offset: -22px;
+      border-radius: 12px;
+      padding: 44px 56px;
+      position: relative;
+      display: flex; flex-direction: column; justify-content: space-between;
+      text-align: center;
+      box-shadow: 0 20px 45px rgba(15, 41, 74, 0.25);
+    }
+    .cert-corner {
+      position: absolute; width: 64px; height: 64px; border: 5px solid #eab308;
+    }
+    .cert-tl { top: 26px; left: 26px; border-right: none; border-bottom: none; }
+    .cert-tr { top: 26px; right: 26px; border-left: none; border-bottom: none; }
+    .cert-bl { bottom: 26px; left: 26px; border-right: none; border-top: none; }
+    .cert-br { bottom: 26px; right: 26px; border-left: none; border-top: none; }
+
+    /* Hall of Fame Podium */
+    .podium-wrap {
+      display: flex; align-items: flex-end; justify-content: center; gap: 18px;
+      margin: 26px 0; flex-wrap: wrap;
+    }
+    .podium-box {
+      width: 230px; border-radius: 22px 22px 12px 12px; padding: 20px 14px;
+      text-align: center; color: var(--navy-900); position: relative;
+    }
+    .podium-1 {
+      background: linear-gradient(180deg, #fef08a 0%, #eab308 100%);
+      min-height: 245px; border: 3px solid #ca8a04; box-shadow: 0 12px 28px rgba(234,179,8,0.35);
+      order: 2;
+    }
+    .podium-2 {
+      background: linear-gradient(180deg, #f1f5f9 0%, #cbd5e1 100%);
+      min-height: 205px; border: 3px solid #94a3b8;
+      order: 1;
+    }
+    .podium-3 {
+      background: linear-gradient(180deg, #fed7aa 0%, #d97706 100%);
+      min-height: 185px; border: 3px solid #b45309; color: #fff;
+      order: 3;
+    }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; border-radius: 14px; border: 1.5px solid var(--sky-200); }
+    table { width: 100%; border-collapse: collapse; background: #fff; font-size: 0.9rem; }
+    th { background: var(--navy-900); color: #fff; padding: 12px; text-align: right; font-weight: 800; }
+    td { padding: 11px 12px; border-bottom: 1px solid var(--slate-200); font-weight: 600; }
+    tr:hover td { background: var(--sky-50); }
+
+    /* Progress Bar */
+    .progress-track {
+      width: 100%; height: 14px; background: var(--sky-100);
+      border-radius: 999px; overflow: hidden; border: 1px solid var(--sky-200);
+    }
+    .progress-fill {
+      height: 100%; background: linear-gradient(90deg, var(--sky-500), var(--gold-500));
+      border-radius: 999px; transition: width 0.5s ease;
+    }
+
+    /* Admin Tabs */
+    .admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .admin-tab {
+      padding: 9px 14px; border-radius: 12px; border: 2px solid var(--sky-200);
+      background: #fff; font-weight: 800; font-size: 0.84rem; cursor: pointer;
+    }
+    .admin-tab.active { background: var(--navy-900); color: var(--gold-300); border-color: var(--gold-400); }
+
+    /* Alerts & Toast */
+    .alert-box {
+      padding: 14px 18px; border-radius: 14px; font-weight: 700; margin-bottom: 14px;
+      border-right: 5px solid;
+    }
+    .alert-info { background: var(--sky-50); border-color: var(--sky-500); color: var(--sky-900); }
+    .alert-warn { background: #fefce8; border-color: var(--gold-500); color: #854d0e; }
+    .alert-success { background: #ecfdf5; border-color: #10b981; color: #065f46; }
+    .alert-danger { background: #fff1f2; border-color: #f43f5e; color: #9f1239; }
+
+    #toast-container {
+      position: fixed; bottom: 22px; left: 22px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .toast {
+      background: var(--navy-900); color: #fff; border-right: 5px solid var(--gold-400);
+      padding: 13px 18px; border-radius: 14px; font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25); animation: fadeSlide 0.25s ease;
+    }
+
+    /* Mobile Drawer */
+    .mobile-menu-btn { display: none; }
+    @media (max-width: 1024px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar-index {
+        display: none; position: fixed; top: 75px; right: 12px; left: 12px;
+        z-index: 950; max-height: 80vh;
+      }
+      .sidebar-index.open { display: block; }
+      .mobile-menu-btn { display: inline-flex; }
+      .hero-grid { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .grid-4, .grid-2 { grid-template-columns: 1fr; }
+      .hero-3d h2 { font-size: 1.55rem; }
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-cert-area, #printable-cert-area * { visibility: visible; }
+      #printable-cert-area {
+        position: fixed; left: 0; top: 0; width: 100%;
+      }
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <!-- نظام الإشعارات والرسائل المنبثقة المخصصة (بديل alert و confirm) -->
-    <div id="toast-container" class="fixed top-20 left-4 z-[9999] flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
-
-    <!-- نافذة التأكيد التفاعلية -->
-    <div id="custom-modal" class="fixed inset-0 bg-nafs-navy/70 backdrop-blur-sm z-[9998] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-nafs-gold transform transition-all scale-95" id="custom-modal-box">
-            <div class="flex items-center gap-3 mb-4">
-                <div id="modal-icon" class="w-12 h-12 rounded-2xl bg-nafs-skyLight text-nafs-skyDark flex items-center justify-center text-2xl">
-                    <i class="fa-solid fa-circle-question"></i>
-                </div>
-                <h3 id="modal-title" class="text-xl font-extrabold text-nafs-navy">تأكيد الإجراء</h3>
-            </div>
-            <p id="modal-message" class="text-slate-600 mb-6 leading-relaxed font-medium"></p>
-            <div class="flex justify-end gap-3">
-                <button id="modal-cancel-btn" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition">إلغاء</button>
-                <button id="modal-confirm-btn" class="px-6 py-2.5 rounded-xl btn-3d-sky text-white font-bold">نعم، متابعة</button>
-            </div>
-        </div>
+  <!-- Official School Header Bar -->
+  <div class="official-topbar">
+    <div class="school-meta">
+      <span id="hdr-edu-dept">🏛️ إدارة التعليم</span>
+      <span>|</span>
+      <span id="hdr-school-name">🏫 المدرسة الابتدائية والمتوسطة</span>
+      <span>|</span>
+      <span id="hdr-year-term">📅 العام الدراسي 1447هـ - الفصل الدراسي</span>
     </div>
+    <div class="school-meta">
+      <span id="db-status-badge" class="badge-db">
+        <span id="db-dot" class="dot-warn"></span>
+        <span id="db-status-text">وضع التخزين المحلي النشط (بانتظار ربط Supabase)</span>
+      </span>
+    </div>
+  </div>
 
-    <!-- الترويسة الرسمية للمدرسة والمنصة -->
-    <header class="bg-white/95 backdrop-blur-md border-b-2 border-nafs-gold/40 sticky top-0 z-50 shadow-sm">
-        <!-- الشريط العلوي للبيانات الرسمية وحالة الربط السحابي -->
-        <div class="bg-nafs-navy text-white text-xs sm:text-sm py-2 px-4">
-            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-                <div class="flex flex-wrap items-center gap-3">
-                    <span class="flex items-center gap-1.5 font-semibold text-nafs-goldBright">
-                        <i class="fa-solid fa-building-columns"></i>
-                        <span id="header-edu-dept">الإدارة العامة للتعليم</span>
-                    </span>
-                    <span class="hidden sm:inline text-white/40">|</span>
-                    <span class="flex items-center gap-1.5 font-bold">
-                        <i class="fa-solid fa-school text-nafs-sky"></i>
-                        <span id="header-school-name">المدرسة الابتدائية والمتوسطة النموذجية</span>
-                    </span>
-                    <span class="hidden md:inline text-white/40">|</span>
-                    <span class="hidden md:inline text-sky-200" id="header-academic-year">العام الدراسي ١٤٤٧هـ - الفصل الدراسي الثاني</span>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <!-- مؤشر حالة قاعدة البيانات السحابية -->
-                    <button onclick="navigateTo('admin-login')" id="db-status-badge" class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 transition text-xs cursor-pointer" title="حالة الاتصال بقاعدة البيانات السحابية">
-                        <span id="db-status-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                        <span id="db-status-text">وضع التخزين المحلي (جاهز للربط السحابي)</span>
-                    </button>
-
-                    <!-- زر دخول الإدارة المحمي -->
-                    <button onclick="navigateTo('admin-login')" class="flex items-center gap-1.5 bg-nafs-gold text-nafs-navy font-extrabold px-3 py-1 rounded-lg hover:bg-nafs-goldBright transition text-xs shadow">
-                        <i class="fa-solid fa-shield-halved"></i>
-                        <span>لوحة الإدارة</span>
-                    </button>
-                </div>
-            </div>
+  <!-- Sticky Main Header -->
+  <header class="main-header">
+    <div class="header-inner">
+      <div class="brand-box" onclick="navigateTo('sec-home')">
+        <div class="nafs-logo-wrap">
+          <img id="main-nafs-logo" src="data:image/webp;base64,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" alt="شعار اختبارات نافس" />
         </div>
-
-        <!-- الترويسة الرئيسية والشعار -->
-        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-            <!-- زر فتح الفهرس التفاعلي + الشعار -->
-            <div class="flex items-center gap-3">
-                <button onclick="toggleSidebar()" class="p-3 rounded-2xl bg-nafs-skyLight text-nafs-navy hover:bg-nafs-sky hover:text-white transition shadow-sm flex items-center gap-2 font-bold" aria-label="دليلكِ إلى دوري أبطال نافس">
-                    <i class="fa-solid fa-bars-staggered text-xl"></i>
-                    <span class="hidden sm:inline text-sm">دليلكِ التفاعلي</span>
-                </button>
-
-                <div onclick="navigateTo('home')" class="flex items-center gap-3 cursor-pointer group">
-                    <!-- شعار اختبارات نافس الرسمي المدمج كـ SVG عالي الدقة مطابق للصورة المرفقة -->
-                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white shadow-md border border-sky-100 p-1 flex items-center justify-center group-hover:scale-105 transition">
-                        <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                            <!-- الحلقات المدارية -->
-                            <ellipse cx="100" cy="105" rx="82" ry="62" transform="rotate(-18 100 105)" fill="none" stroke="#4ea8be" stroke-width="2.5" opacity="0.85"/>
-                            <ellipse cx="100" cy="108" rx="76" ry="58" transform="rotate(24 100 108)" fill="none" stroke="#d99b52" stroke-width="2.5" opacity="0.85"/>
-                            <!-- المربع البرتقالي (علامة استفهام) -->
-                            <g transform="translate(22, 32) rotate(-14)">
-                                <rect x="0" y="0" width="46" height="46" rx="10" fill="#f39c4f"/>
-                                <text x="23" y="34" font-family="Cairo, sans-serif" font-weight="900" font-size="30" fill="#ffffff" text-anchor="middle">?</text>
-                            </g>
-                            <!-- الدائرة الخضراء (علامة صح) -->
-                            <g transform="translate(73, 24)">
-                                <circle cx="27" cy="27" r="26" fill="#46a76c"/>
-                                <path d="M16 27 L24 35 L39 19" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-                            </g>
-                            <!-- المربع الأزرق السماوي (علامة تعجب) -->
-                            <g transform="translate(132, 26) rotate(12)">
-                                <rect x="0" y="0" width="46" height="46" rx="10" fill="#52b2c8"/>
-                                <text x="23" y="34" font-family="Cairo, sans-serif" font-weight="900" font-size="30" fill="#ffffff" text-anchor="middle">!</text>
-                            </g>
-                            <!-- كلمة نافس -->
-                            <text x="100" y="122" font-family="Cairo, sans-serif" font-weight="900" font-size="38" fill="#3a2e7c" text-anchor="middle">نافس</text>
-                            <!-- كلمة NAFS -->
-                            <text x="100" y="156" font-family="Tajawal, sans-serif" font-weight="700" font-size="25" letter-spacing="3" fill="#3a2e7c" text-anchor="middle">NAFS</text>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-lg sm:text-2xl font-black text-nafs-navy tracking-tight flex items-center gap-1.5">
-                            <span>منصة دوري أبطال نافس</span>
-                            <span class="text-nafs-gold text-base sm:text-xl">🏆</span>
-                        </h1>
-                        <p class="text-xs sm:text-sm font-bold text-nafs-skyDark">نافس بمهارتك… وكن بطل نافس!</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- حالة الطالبة المسجلة أو زر التسجيل السريع -->
-            <div id="header-student-area" class="flex items-center gap-2 sm:gap-3">
-                <button onclick="navigateTo('register')" class="btn-3d-gold px-4 sm:px-6 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-rocket"></i>
-                    <span>ابدئي رحلتكِ</span>
-                </button>
-            </div>
+        <div class="brand-title">
+          <h1>🏆 منصة دوري أبطال نافس</h1>
+          <span>نافس بمهارتك… وكن بطل نافس!</span>
         </div>
-    </header>
+      </div>
 
-    <!-- القائمة الجانبية التفاعلية: دليلكِ إلى دوري أبطال نافس (20 قسمًا) -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-nafs-navy/60 backdrop-blur-xs z-50 hidden transition-opacity"></div>
-    <aside id="interactive-sidebar" class="fixed top-0 right-0 h-full w-80 max-w-[88vw] bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l-4 border-nafs-gold">
-        <div class="p-5 bg-gradient-to-l from-nafs-navy to-nafs-skyDark text-white flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <span class="text-2xl">🧭</span>
-                <div>
-                    <h2 class="font-extrabold text-base">دليلكِ إلى دوري أبطال نافس</h2>
-                    <p class="text-xs text-sky-200">الفهرس التفاعلي الشامل (٢٠ قسمًا)</p>
-                </div>
-            </div>
-            <button onclick="toggleSidebar()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
+      <div class="header-actions">
+        <div id="active-student-pill" class="student-pill" style="display:none;">
+          <span>👩‍🎓</span>
+          <span id="pill-student-name">طالبة</span>
+          <span style="color:var(--sky-600);" id="pill-student-grade"></span>
+          <button class="btn-3d btn-white btn-sm" onclick="logoutStudent()">خروج</button>
         </div>
+        <button id="header-reg-btn" class="btn-3d btn-gold btn-sm" onclick="navigateTo('sec-register')">🚀 ابدئي رحلتكِ</button>
+        <button class="btn-3d btn-sky btn-sm mobile-menu-btn" onclick="toggleMobileIndex()">📑 الفهرس التفاعلي</button>
+      </div>
+    </div>
+  </header>
 
-        <div class="flex-1 overflow-y-auto p-3 space-y-1 text-sm font-bold" id="sidebar-links-list">
-            <!-- يتم توليد الروابط الـ 20 ديناميكيًا لضمان الدقة والتفاعلية الكاملة -->
-        </div>
+  <!-- Main Shell -->
+  <div class="app-shell">
+    <!-- Interactive 20-Item Index Sidebar -->
+    <aside class="sidebar-index" id="sidebar-index">
+      <div class="index-header">
+        <h2>🧭 دليلكِ إلى دوري أبطال نافس</h2>
+        <span style="font-size:0.75rem; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:8px;">20 قسماً</span>
+      </div>
+      <ul class="nav-list" id="interactive-index-list">
+        <li class="nav-item active" data-target="sec-home" onclick="navigateTo('sec-home')"><span class="nav-num">1</span>🏠 الصفحة الرئيسية</li>
+        <li class="nav-item" data-target="sec-about" onclick="navigateTo('sec-about')"><span class="nav-num">2</span>💡 عن مشروع دوري أبطال نافس</li>
+        <li class="nav-item" data-target="sec-goals" onclick="navigateTo('sec-goals')"><span class="nav-num">3</span>🎯 أهداف المشروع</li>
+        <li class="nav-item" data-target="sec-register" onclick="navigateTo('sec-register')"><span class="nav-num">4</span>🚀 ابدئي رحلتكِ – تسجيل البيانات</li>
+        <li class="nav-item" data-target="sec-dashboard" onclick="navigateTo('sec-dashboard')"><span class="nav-num">5</span>👩‍🎓 لوحة الطالبة الشخصية</li>
+        <li class="nav-item" data-target="sec-practice" onclick="navigateTo('sec-practice')"><span class="nav-num">6</span>🎮 التدريبات التفاعلية</li>
+        <li class="nav-item nav-sub" data-target="sec-sub-arabic" onclick="openSubjectPage('لغتي')"><span class="nav-num">7</span>📖 تدريبات لغتي</li>
+        <li class="nav-item nav-sub" data-target="sec-sub-math" onclick="openSubjectPage('الرياضيات')"><span class="nav-num">8</span>➗ تدريبات الرياضيات</li>
+        <li class="nav-item nav-sub" data-target="sec-sub-science" onclick="openSubjectPage('العلوم')"><span class="nav-num">9</span>🔬 تدريبات العلوم</li>
+        <li class="nav-item" data-target="sec-exams" onclick="navigateTo('sec-exams')"><span class="nav-num">10</span>⏱️ الاختبارات المحاكية لنافس</li>
+        <li class="nav-item nav-sub" data-target="sec-exam-arabic" onclick="startExamSetup('لغتي')"><span class="nav-num">11</span>📝 اختبار لغتي</li>
+        <li class="nav-item nav-sub" data-target="sec-exam-math" onclick="startExamSetup('الرياضيات')"><span class="nav-num">12</span>📐 اختبار الرياضيات</li>
+        <li class="nav-item nav-sub" data-target="sec-exam-science" onclick="startExamSetup('العلوم')"><span class="nav-num">13</span>🧪 اختبار العلوم</li>
+        <li class="nav-item nav-sub" data-target="sec-exam-all" onclick="startExamSetup('الاختبار الشامل')"><span class="nav-num">14</span>🏆 الاختبار الشامل للمواد الثلاث</li>
+        <li class="nav-item" data-target="sec-results" onclick="navigateTo('sec-results')"><span class="nav-num">15</span>📊 النتائج وتحليل الأداء</li>
+        <li class="nav-item" data-target="sec-certificates" onclick="navigateTo('sec-certificates')"><span class="nav-num">16</span>📜 شهادات الإنجاز</li>
+        <li class="nav-item" data-target="sec-hall" onclick="navigateTo('sec-hall')"><span class="nav-num">17</span>🥇 لوحة شرف الأبطال</li>
+        <li class="nav-item" data-target="sec-history" onclick="navigateTo('sec-history')"><span class="nav-num">18</span>🏅 إنجازاتي وسجل محاولاتي</li>
+        <li class="nav-item" data-target="sec-tips" onclick="navigateTo('sec-tips')"><span class="nav-num">19</span>🌟 نصائح وإرشادات الاستعداد لنافس</li>
+        <li class="nav-item" data-target="sec-faq" onclick="navigateTo('sec-faq')"><span class="nav-num">20</span>❓ الأسئلة الشائعة وطريقة الاستخدام</li>
+      </ul>
 
-        <div class="p-4 bg-sky-50 border-t border-sky-100 text-center">
-            <p class="text-xs font-bold text-nafs-navy mb-2">«نتعلم لنتقدم، نتنافس لنتميز، وننجح لنكون أبطالًا»</p>
-            <button onclick="toggleSidebar(); navigateTo('admin-login')" class="w-full py-2 rounded-xl bg-nafs-navy text-nafs-goldBright text-xs font-extrabold hover:bg-nafs-navyDark transition">
-                <i class="fa-solid fa-lock ml-1"></i> بوابة إدارة المنصة
-            </button>
-        </div>
+      <div class="admin-nav-box">
+        <button class="admin-nav-btn" onclick="navigateTo('sec-admin')">
+          <span>🔐 لوحة تحكم الإدارة</span>
+          <span>⚙️</span>
+        </button>
+      </div>
     </aside>
 
-    <!-- المحتوى الرئيسي الديناميكي للمنصة -->
-    <main id="app-content" class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8">
-        <!-- يتم حقن الصفحات والأقسام هنا بسلاسة -->
-    </main>
-
-    <!-- التذييل الرسمي -->
-    <footer class="bg-nafs-navy text-white border-t-4 border-nafs-gold mt-12">
-        <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            <div>
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="text-2xl">🏆</span>
-                    <h3 class="text-lg font-black text-nafs-goldBright">منصة دوري أبطال نافس</h3>
-                </div>
-                <p class="text-sm text-sky-200 leading-relaxed" id="footer-platform-desc">
-                    منصة تعليمية تفاعلية متخصصة في تهيئة طالبات المرحلتين الابتدائية والمتوسطة لاختبارات نافس الوطنية في لغتي والرياضيات والعلوم.
-                </p>
-            </div>
-            <div class="text-center">
-                <p class="font-extrabold text-nafs-gold text-base mb-1">«نتعلم لنتقدم، نتنافس لنتميز، وننجح لنكون أبطالًا»</p>
-                <p class="text-xs text-sky-300">نافس بمهارتك… وكن بطل نافس!</p>
-            </div>
-            <div class="md:text-left text-xs text-sky-200 space-y-1">
-                <p><span class="text-nafs-gold font-bold">مديرة المدرسة:</span> <span id="footer-principal">أ. نورة بنت عبدالله</span></p>
-                <p><span class="text-nafs-gold font-bold">منسقة المشروع:</span> <span id="footer-coordinator">أ. سارة بنت محمد</span></p>
-                <p class="text-sky-400 pt-1">جميع الحقوق محفوظة © ٢٠٢٦م</p>
-            </div>
+    <!-- Main Dynamic Content Area -->
+    <main>
+      <!-- Database Connection Warning Banner (Shown until Supabase URL & Key are configured) -->
+      <div id="supabase-setup-banner" class="alert-box alert-warn" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <strong>⚠️ تنبيه ربط قاعدة البيانات السحابية (Supabase):</strong>
+          المنصة تعمل حاليًا على قاعدة البيانات المحلية المدمجة في المتصفح (تحفظ جميع التسجيلات والنتائج والشهادات فعليًا دون أي بيانات وهمية). لإتاحة المزامنة السحابية الدائمة عبر جميع الأجهزة، يرجى إدخال رابط مشروع <strong>Supabase URL</strong> ومفتاح <strong>Anon Key</strong> وتنفيذ كود الجداول الـ 18 من لوحة الإدارة.
         </div>
-    </footer>
+        <button class="btn-3d btn-sky btn-sm" onclick="navigateTo('sec-admin'); switchAdminTab('tab-supabase')">⚙️ إعداد الربط السحابي</button>
+      </div>
 
-    <!-- ===================================================================== -->
-    <!-- البرمجة الكاملة والمنطق التعليمي وقاعدة البيانات السحابية والأسئلة -->
-    <!-- ===================================================================== -->
-    <script>
-        /*************************************************************************
-         * 1. تهيئة البيانات الأساسية وبنك الأسئلة المعتمد للمنهج السعودي
-         *************************************************************************/
-        const DEFAULT_SCHOOL_SETTINGS = {
-            edu_dept: 'الإدارة العامة للتعليم بمنطقة الرياض',
-            school_name: 'الابتدائية والمتوسطة النموذجية للبنات',
-            principal_name: 'أ. نورة بنت عبدالله السبيعي',
-            coordinator_name: 'أ. سارة بنت محمد القحطاني',
-            academic_year: '١٤٤٧هـ - ١٤٤٨هـ',
-            semester: 'الفصل الدراسي الثاني',
-            platform_desc: 'منصة تعليمية إلكترونية تفاعلية تهدف إلى تهيئة طالبات الصفوف الثالث الابتدائي والسادس الابتدائي والثالث المتوسط لاختبارات نافس الوطنية بأسلوب شيق وتنافسي.',
-            exam_duration_minutes: 20,
-            comprehensive_per_subject: 4,
-            passing_score: 70,
-            show_full_names_honor: true,
-            show_honor_board: true
-        };
+      <!-- 1. HOME SECTION -->
+      <section id="sec-home" class="section-view active">
+        <div class="hero-3d">
+          <div class="hero-grid">
+            <div>
+              <div class="hero-badge">🏆 الاختبارات الوطنية نافس | الابتدائية والمتوسطة</div>
+              <h2>مرحبًا بكِ في منصة دوري أبطال نافس</h2>
+              <div class="hero-slogan">✨ نافس بمهارتك… وكن بطل نافس!</div>
+              <div class="hero-quote">«نتعلم لنتقدم، نتنافس لنتميز، وننجح لنكون أبطالًا».</div>
+              <p id="home-platform-desc" style="line-height:1.8; opacity:0.95;">
+                منصة تعليمية تفاعلية متكاملة لتهيئة طالبات الصفين الثالث والسادس الابتدائي والصف الثالث المتوسط لاختبارات نافس الوطنية في مواد (لغتي، الرياضيات، العلوم) عبر تدريبات ذكية متدرجة واختبارات محاكية وشهادات إنجاز فورية.
+              </p>
+              <div class="hero-cta-row">
+                <button class="btn-3d btn-gold" onclick="navigateTo('sec-register')">🚀 ابدئي رحلتكِ</button>
+                <button class="btn-3d btn-white" onclick="navigateTo('sec-practice')">🎮 تدربي وارتقي</button>
+                <button class="btn-3d btn-sky" style="border:2px solid #fff;" onclick="navigateTo('sec-exams')">⏱️ اختبري نفسكِ</button>
+                <button class="btn-3d btn-white" onclick="navigateTo('sec-hall')">🥇 شاهدي أبطال نافس</button>
+              </div>
+            </div>
 
-        const STAGES_AND_GRADES = {
-            'ابتدائي': [
-                { id: 'g3', name: 'الصف الثالث الابتدائي', badge: 'أبطال الأساس 🌟' },
-                { id: 'g6', name: 'الصف السادس الابتدائي', badge: 'أبطال التميز 🚀' }
-            ],
-            'متوسط': [
-                { id: 'g9', name: 'الصف الثالث المتوسط', badge: 'أبطال القمة 👑' }
-            ]
-        };
-
-        const SUBJECTS_CONFIG = {
-            'لغتي': {
-                id: 'لغتي',
-                title: 'لغتي الجميلة / الخالدة',
-                icon: 'fa-book-open-reader',
-                emoji: '📖',
-                color: 'sky',
-                bgGradient: 'from-sky-500 to-blue-700',
-                skills: {
-                    'g3': ['فهم المقروء', 'المفردات والمعاني', 'القواعد والإملاء', 'تحديد الفكرة الرئيسة'],
-                    'g6': ['فهم المقروء', 'تحليل النصوص', 'التراكيب اللغوية', 'القواعد والإملاء', 'استنتاج الأفكار'],
-                    'g9': ['فهم المقروء', 'تحليل النصوص الأدبية', 'التراكيب اللغوية والنحو', 'الإملاء والكتابة', 'استنتاج الأفكار والتذوق']
-                }
-            },
-            'الرياضيات': {
-                id: 'الرياضيات',
-                title: 'الرياضيات',
-                icon: 'fa-calculator',
-                emoji: '📐',
-                color: 'amber',
-                bgGradient: 'from-amber-400 to-yellow-600',
-                skills: {
-                    'g3': ['الأعداد والعمليات', 'الجمع والطرح والضرب', 'الكسور البسيطة', 'القياس والهندسة', 'قراءة البيانات'],
-                    'g6': ['الأعداد والعمليات', 'الكسور والأعداد العشرية', 'القياس والهندسة', 'الأنماط والعلاقات', 'حل المسائل اللفظية', 'قراءة الرسوم البيانية'],
-                    'g9': ['الجبر والمعادلات', 'الهندسة والقياس', 'النسبة والتناسب', 'الإحصاء والاحتمالات', 'التفكير الرياضي وحل المسائل']
-                }
-            },
-            'العلوم': {
-                id: 'العلوم',
-                title: 'العلوم',
-                icon: 'fa-flask-vial',
-                emoji: '🔬',
-                color: 'emerald',
-                bgGradient: 'from-emerald-500 to-teal-700',
-                skills: {
-                    'g3': ['الكائنات الحية', 'الأنظمة البيئية', 'المادة وتغيراتها', 'الأرض والفضاء'],
-                    'g6': ['الكائنات الحية ووظائفها', 'الأنظمة البيئية', 'المادة وتغيراتها', 'الطاقة والقوى والحركة', 'الأرض والفضاء'],
-                    'g9': ['جسم الإنسان والصحة', 'المادة والتفاعلات الكيميائية', 'الطاقة والقوى والحركة', 'الأرض والكون', 'التجارب والاستقصاء العلمي']
-                }
-            }
-        };
-
-        // بنك أسئلة غني ومصنف بدقة حسب المرحلة والصف والمادة والمهارة ومستوى الصعوبة
-        const INITIAL_QUESTIONS_BANK = [
-            // ================= الصف الثالث الابتدائي (g3) =================
-            // لغتي g3
-            {
-                id: 'q_g3_ar_1', stage: 'ابتدائي', grade: 'g3', subject: 'لغتي', skill: 'فهم المقروء', difficulty: 'سهل', active: true,
-                text: 'اقرئي النص ثم أجيبي: «تحبُّ نورةُ القراءةَ، فتذهبُ كلَّ أسبوعٍ إلى مكتبةِ المدرسةِ لتستعيرَ قصةً مفيدةً». متى تذهب نورة إلى مكتبة المدرسة؟',
-                options: ['كل يومٍ', 'كل أسبوعٍ', 'كل شهرٍ', 'في الإجازة الصيفية فقط'],
-                correctIndex: 1,
-                explanation: 'ورد في النص صراحةً: «فتذهبُ كلَّ أسبوعٍ إلى مكتبةِ المدرسةِ».'
-            },
-            {
-                id: 'q_g3_ar_2', stage: 'ابتدائي', grade: 'g3', subject: 'لغتي', skill: 'المفردات والمعاني', difficulty: 'سهل', active: true,
-                text: 'ما مرادف كلمة (تعاون) في جملة: «تعاونت الطالبات في تنظيف الفصل»؟',
-                options: ['تخاصمت', 'تساعدت', 'تأخرت', 'تفرقت'],
-                correctIndex: 1,
-                explanation: 'التعاون يعني المساعدة والمشاركة في إنجاز العمل.'
-            },
-            {
-                id: 'q_g3_ar_3', stage: 'ابتدائي', grade: 'g3', subject: 'لغتي', skill: 'القواعد والإملاء', difficulty: 'متوسط', active: true,
-                text: 'أيُّ الكلمات الآتية تنتهي بتاء مربوطة صحيحة؟',
-                options: ['بنتٌ', 'مدرسةٌ', 'بيتٌ', 'وقتٌ'],
-                correctIndex: 1,
-                explanation: 'كلمة (مدرسة) تنطق هاءً عند الوقف وتاءً عند الوصل، لذا تُكتب بالتاء المربوطة (ة).'
-            },
-            {
-                id: 'q_g3_ar_4', stage: 'ابتدائي', grade: 'g3', subject: 'لغتي', skill: 'تحديد الفكرة الرئيسة', difficulty: 'متقدم', active: true,
-                text: '«الماءُ نعمةٌ عظيمةٌ، به تحيا الكائناتُ، ويجبُ علينا ترشيدُ استهلاكِه وعدمُ الإسرافِ فيه». الفكرة الرئيسة للنص هي:',
-                options: ['أنواع البحار والأنهار', 'أهمية الماء ووجوب المحافظة عليه', 'كيفية صنع السفن', 'فصول السنة الأربعة'],
-                correctIndex: 1,
-                explanation: 'النص يتحدث عن فضل الماء وضرورة عدم الإسراف فيه والمحافظة عليه.'
-            },
-            // الرياضيات g3
-            {
-                id: 'q_g3_ma_1', stage: 'ابتدائي', grade: 'g3', subject: 'الرياضيات', skill: 'الأعداد والعمليات', difficulty: 'سهل', active: true,
-                text: 'ما القيمة المنزلية للرقم ٧ في العدد ٤٧٢٥؟',
-                options: ['٧', '٧٠', '٧٠٠', '٧٠٠٠'],
-                correctIndex: 2,
-                explanation: 'الرقم ٧ يقع في منزلة المئات، لذا قيمته المنزلية تساوي ٧٠٠.'
-            },
-            {
-                id: 'q_g3_ma_2', stage: 'ابتدائي', grade: 'g3', subject: 'الرياضيات', skill: 'الجمع والطرح والضرب', difficulty: 'سهل', active: true,
-                text: 'اشترت سارة ٤ علب من الأقلام، في كل علبة ٦ أقلام. كم قلمًا اشترت سارة؟',
-                options: ['١٠ أقلام', '٢٠ قلمًا', '٢٤ قلمًا', '٢٨ قلمًا'],
-                correctIndex: 2,
-                explanation: 'نستخدم عملية الضرب: ٤ × ٦ = ٢٤ قلمًا.'
-            },
-            {
-                id: 'q_g3_ma_3', stage: 'ابتدائي', grade: 'g3', subject: 'الرياضيات', skill: 'الكسور البسيطة', difficulty: 'متوسط', active: true,
-                text: 'قُسّمت فطيرة إلى ٨ أجزاء متطابقة، أكلت هند ٣ أجزاء منها. ما الكسر الذي يمثل ما أكلته هند؟',
-                options: ['٣/٥', '٣/٨', '٥/٨', '٨/٣'],
-                correctIndex: 1,
-                explanation: 'عدد الأجزاء المأكولة (٣) في البسط، والعدد الكلي للأجزاء (٨) في المقام = ٣/٨.'
-            },
-            {
-                id: 'q_g3_ma_4', stage: 'ابتدائي', grade: 'g3', subject: 'الرياضيات', skill: 'القياس والهندسة', difficulty: 'متقدم', active: true,
-                text: 'مربع طول ضلعه ٥ سم، فكم يساوي محيطه؟',
-                options: ['١٠ سم', '١٥ سم', '٢٠ سم', '٢٥ سم'],
-                correctIndex: 2,
-                explanation: 'محيط المربع = مجموع أطوال أضلاعه الأربعة = ٥ + ٥ + ٥ + ٥ = ٢٠ سم.'
-            },
-            // العلوم g3
-            {
-                id: 'q_g3_sc_1', stage: 'ابتدائي', grade: 'g3', subject: 'العلوم', skill: 'الكائنات الحية', difficulty: 'سهل', active: true,
-                text: 'أي جزء في النبات يمتص الماء والأملاح المعدنية من التربة؟',
-                options: ['الأوراق', 'الجذور', 'الأزهار', 'الثمار'],
-                correctIndex: 1,
-                explanation: 'الجذور تثبت النبات في التربة وتمتص الماء والأملاح الذائبة فيها.'
-            },
-            {
-                id: 'q_g3_sc_2', stage: 'ابتدائي', grade: 'g3', subject: 'العلوم', skill: 'الأنظمة البيئية', difficulty: 'سهل', active: true,
-                text: 'ماذا نسمي الحيوانات التي تتغذى على النباتات فقط؟',
-                options: ['آكلات اللحوم', 'آكلات الأعشاب', 'المحللات', 'القارتة'],
-                correctIndex: 1,
-                explanation: 'الحيوانات التي يقتصر غذاؤها على النباتات تُسمى آكلات الأعشاب مثل الأرنب والغزال.'
-            },
-            {
-                id: 'q_g3_sc_3', stage: 'ابتدائي', grade: 'g3', subject: 'العلوم', skill: 'المادة وتغيراتها', difficulty: 'متوسط', active: true,
-                text: 'عندما يتحول الماء السائل إلى بخار ماء بالتسخين، تسمى هذه العملية:',
-                options: ['الانصهار', 'التجمد', 'التبخر', 'التكثف'],
-                correctIndex: 2,
-                explanation: 'التبخر هو تحول المادة من الحالة السائلة إلى الحالة الغازية بفعل الحرارة.'
-            },
-            {
-                id: 'q_g3_sc_4', stage: 'ابتدائي', grade: 'g3', subject: 'العلوم', skill: 'الأرض والفضاء', difficulty: 'متقدم', active: true,
-                text: 'ما السبب الرئيس في حدوث الليل والنهار على سطح الأرض؟',
-                options: ['دوران القمر حول الأرض', 'دوران الأرض حول محورها', 'دوران الشمس حول الأرض', 'تغير الفصول الأربعة'],
-                correctIndex: 1,
-                explanation: 'تدور الأرض حول محورها دورة كاملة كل ٢٤ ساعة فينتج الليل والنهار.'
-            },
-
-            // ================= الصف السادس الابتدائي (g6) =================
-            // لغتي g6
-            {
-                id: 'q_g6_ar_1', stage: 'ابتدائي', grade: 'g6', subject: 'لغتي', skill: 'فهم المقروء', difficulty: 'سهل', active: true,
-                text: '«تُعدُّ المملكةُ العربيةُ السعوديةُ رائدةً في مجالِ الطاقةِ المتجددةِ وحمايةِ البيئةِ عبرَ مبادرةِ السعوديةِ الخضراءِ». ما الهدف من مبادرة السعودية الخضراء وفق النص؟',
-                options: ['زيادة الصناعات الثقيلة', 'حماية البيئة وتنمية الغطاء النباتي', 'بناء الموانئ البحرية', 'تصدير المعادن'],
-                correctIndex: 1,
-                explanation: 'أشار النص إلى أن المملكة رائدة في حماية البيئة عبر مبادرة السعودية الخضراء.'
-            },
-            {
-                id: 'q_g6_ar_2', stage: 'ابتدائي', grade: 'g6', subject: 'لغتي', skill: 'التراكيب اللغوية', difficulty: 'متوسط', active: true,
-                text: 'اختر الإعراب الصحيح لكلمة (المجتهدون) في جملة: «كَرَّمَتِ المديرةُ المجتهدينَ»:',
-                options: ['فاعل مرفوع بالواو', 'مفعول به منصوب بالياء', 'مبتدأ مرفوع بالضمة', 'اسم مجرور بالكسرة'],
-                correctIndex: 1,
-                explanation: 'المجتهدين: مفعول به منصوب وعلامة نصبه الياء لأنه جمع مذكر سالم.'
-            },
-            {
-                id: 'q_g6_ar_3', stage: 'ابتدائي', grade: 'g6', subject: 'لغتي', skill: 'القواعد والإملاء', difficulty: 'متوسط', active: true,
-                text: 'لماذا كُتبت الهمزة المتوسطة على الواو في كلمة (مُؤْمِن)؟',
-                options: ['لأنها مفتوحة وما قبلها مفتوح', 'لأنها ساكنة وما قبلها مضموم', 'لأنها مكسورة', 'لأن ما قبلها ألف مد'],
-                correctIndex: 1,
-                explanation: 'الهمزة ساكنة والحرف الذي قبلها مضموم، والضمة أقوى من السكون فيناسبها الواو.'
-            },
-            {
-                id: 'q_g6_ar_4', stage: 'ابتدائي', grade: 'g6', subject: 'لغتي', skill: 'استنتاج الأفكار', difficulty: 'متقدم', active: true,
-                text: '«مَن جَدَّ وَجَدَ، ومَن سارَ على الدَّربِ وَصَلَ». العلاقة بين شطري هذه الحكمة تدل على:',
-                options: ['التناقض والتضاد', 'السبب والنتيجة', 'التفصيل بعد الإجمال', 'الاستدراك'],
-                correctIndex: 1,
-                explanation: 'الجد والاجتهاد والسير في الطريق الصحيح سبب للوصول إلى النجاح والنتيجة المرجوة.'
-            },
-            // الرياضيات g6
-            {
-                id: 'q_g6_ma_1', stage: 'ابتدائي', grade: 'g6', subject: 'الرياضيات', skill: 'الكسور والأعداد العشرية', difficulty: 'سهل', active: true,
-                text: 'ما ناتج جمع الكسرين العشريين: ٣,٤٥ + ٢,٣٠ ؟',
-                options: ['٥,١٥', '٥,٧٥', '٦,٧٥', '٥,٥٧'],
-                correctIndex: 1,
-                explanation: 'نجمع الأجزاء العشرية: ٠,٤٥ + ٠,٣٠ = ٠,٧٥، والأعداد الصحيحة: ٣ + ٢ = ٥، الناتج ٥,٧٥.'
-            },
-            {
-                id: 'q_g6_ma_2', stage: 'ابتدائي', grade: 'g6', subject: 'الرياضيات', skill: 'الأعداد والعمليات', difficulty: 'متوسط', active: true,
-                text: 'ما قيمة العبارة: ١٨ ÷ ٣ + ٤ × ٢ ؟',
-                options: ['٢٠', '١٤', '١٠', '٢٤'],
-                correctIndex: 1,
-                explanation: 'بحسب ترتيب العمليات نبدأ بالقسمة والضرب: (١٨ ÷ ٣) + (٤ × ٢) = ٦ + ٨ = ١٤.'
-            },
-            {
-                id: 'q_g6_ma_3', stage: 'ابتدائي', grade: 'g6', subject: 'الرياضيات', skill: 'القياس والهندسة', difficulty: 'متوسط', active: true,
-                text: 'مثلث قياس زاويتين فيه ٥٠° و ٦٠°. ما قياس الزاوية الثالثة؟',
-                options: ['٦٠°', '٧٠°', '٨٠°', '٩٠°'],
-                correctIndex: 1,
-                explanation: 'مجموع زوايا المثلث ١٨٠°، إذن الزاوية الثالثة = ١٨٠ - (٥٠ + ٦٠) = ٧٠°.'
-            },
-            {
-                id: 'q_g6_ma_4', stage: 'ابتدائي', grade: 'g6', subject: 'الرياضيات', skill: 'حل المسائل اللفظية', difficulty: 'متقدم', active: true,
-                text: 'إذا كان ثمن ٣ دفاتر ١٥ ريالًا، فكم ريالًا نحتاج لشراء ٧ دفاتر من النوع نفسه؟',
-                options: ['٢١ ريالًا', '٣٠ ريالًا', '٣٥ ريالًا', '٤٥ ريالًا'],
-                correctIndex: 2,
-                explanation: 'ثمن الدفتر الواحد = ١٥ ÷ ٣ = ٥ ريالات. ثمن ٧ دفاتر = ٧ × ٥ = ٣٥ ريالًا.'
-            },
-            // العلوم g6
-            {
-                id: 'q_g6_sc_1', stage: 'ابتدائي', grade: 'g6', subject: 'العلوم', skill: 'الكائنات الحية ووظائفها', difficulty: 'سهل', active: true,
-                text: 'ما الوحدة الأساسية لبناء أجسام جميع الكائنات الحية؟',
-                options: ['النسيج', 'الخلية', 'العضو', 'الجهاز'],
-                correctIndex: 1,
-                explanation: 'الخلية هي أصغر وحدة بناء ووظيفة في أجسام الكائنات الحية.'
-            },
-            {
-                id: 'q_g6_sc_2', stage: 'ابتدائي', grade: 'g6', subject: 'العلوم', skill: 'الطاقة والقوى والحركة', difficulty: 'متوسط', active: true,
-                text: 'ما القوة التي تسبب سقوط الأجسام نحو سطح الأرض عند تركها؟',
-                options: ['قوة الاحتكاك', 'قوة الجاذبية الأرضية', 'القوة المغناطيسية', 'قوة الدفع'],
-                correctIndex: 1,
-                explanation: 'الجاذبية الأرضية هي قوة سحب تجذب جميع الأجسام نحو مركز الأرض.'
-            },
-            {
-                id: 'q_g6_sc_3', stage: 'ابتدائي', grade: 'g6', subject: 'العلوم', skill: 'المادة وتغيراتها', difficulty: 'متوسط', active: true,
-                text: 'أي مما يلي يُعدّ تغيرًا كيميائيًا للمادة؟',
-                options: ['انصهار الجليد', 'تمزيق الورق', 'صدأ الحديد', 'ذوبان السكر في الماء'],
-                correctIndex: 2,
-                explanation: 'صدأ الحديد ينتج عنه مادة جديدة (أكسيد الحديد) تختلف في خواصها عن الحديد الأصلي.'
-            },
-            {
-                id: 'q_g6_sc_4', stage: 'ابتدائي', grade: 'g6', subject: 'العلوم', skill: 'الأنظمة البيئية', difficulty: 'متقدم', active: true,
-                text: 'في السلسلة الغذائية: (عشب ← أرنب ← ثعلب)، ماذا يحدث لأعداد الأرانب إذا تناقصت الثعالب بشكل مفاجئ؟',
-                options: ['تقل أعداد الأرانب', 'تزداد أعداد الأرانب مؤقتًا', 'تنقرض الأعشاب فورًا', 'لا تتأثر السلسلة الغذائية'],
-                correctIndex: 1,
-                explanation: 'بنقص المفترسات (الثعالب) يقل افتراس الأرانب فتزداد أعدادها مؤقتًا.'
-            },
-
-            // ================= الصف الثالث المتوسط (g9) =================
-            // لغتي g9
-            {
-                id: 'q_g9_ar_1', stage: 'متوسط', grade: 'g9', subject: 'لغتي', skill: 'فهم المقروء', difficulty: 'سهل', active: true,
-                text: '«الذكاءُ الاصطناعيُّ أداةٌ معرفيةٌ متقدمةٌ تُسهمُ في تسريعِ الابتكارِ، ولكنَّها لا تُغني عن العقلِ البشريِّ المبدعِ الذي يوجِّهُها ويضبطُ أخلاقياتِها». الفكرة المحورية في العبارة هي:',
-                options: ['الذكاء الاصطناعي سيلغي دور الإنسان تمامًا', 'التكامل بين الذكاء الاصطناعي وتوجيه العقل البشري', 'صعوبة تعلم التقنيات الحديثة', 'تاريخ صناعة الحواسيب'],
-                correctIndex: 1,
-                explanation: 'النص يوازن بين أهمية الذكاء الاصطناعي وضرورة قيادة العقل البشري وأخلاقياته له.'
-            },
-            {
-                id: 'q_g9_ar_2', stage: 'متوسط', grade: 'g9', subject: 'لغتي', skill: 'التراكيب اللغوية والنحو', difficulty: 'متوسط', active: true,
-                text: 'حدد اسم الفاعل من الفعل الثلاثي (كَتَبَ) في الجملة الآتية: «الطالبةُ كاتبةٌ للدرسِ بإتقانٍ»:',
-                options: ['الطالبة', 'كاتبة', 'الدرس', 'إتقان'],
-                correctIndex: 1,
-                explanation: 'اسم الفاعل من الفعل الثلاثي يصاغ على وزن (فاعل)، مثل: كتب ← كاتب / كاتبة.'
-            },
-            {
-                id: 'q_g9_ar_3', stage: 'متوسط', grade: 'g9', subject: 'لغتي', skill: 'تحليل النصوص الأدبية', difficulty: 'متقدم', active: true,
-                text: 'في قول الشاعر: «العِلمُ يبني بيوتًا لا عمادَ لها»، ما نوع الصورة البيانية في (العلم يبني بيوتًا)؟',
-                options: ['تشبيه بليغ', 'استعارة مكنية', 'طباق إيجاب', 'جناس تام'],
-                correctIndex: 1,
-                explanation: 'شبه الشاعر العلم بالمهندس أو الباني الذي يبني البيوت، وحذف المشبه به وأبقى صفة البناء على سبيل الاستعارة المكنية.'
-            },
-            {
-                id: 'q_g9_ar_4', stage: 'متوسط', grade: 'g9', subject: 'لغتي', skill: 'الإملاء والكتابة', difficulty: 'متوسط', active: true,
-                text: 'أي الجمل الآتية خالية من الأخطاء الإملائية في رسم الألف اللينة؟',
-                options: ['دعى المؤمن ربه', 'سما الوطن بأبنائه', 'قضا القاضي بالعدل', 'بنا المهندس الجسر'],
-                correctIndex: 1,
-                explanation: 'الفعل (سما) أصل ألفه واو (يسمو) لذا تُرسم ألفًا قائمة (ا)، بينما دعا وقضى وبنى أصلها ياء أو واو كما في القاعدة.'
-            },
-            // الرياضيات g9
-            {
-                id: 'q_g9_ma_1', stage: 'متوسط', grade: 'g9', subject: 'الرياضيات', skill: 'الجبر والمعادلات', difficulty: 'سهل', active: true,
-                text: 'ما حل المعادلة الخطية: ٣س - ٥ = ١٦ ؟',
-                options: ['س = ٥', 'س = ٧', 'س = ٩', 'س = ٢١'],
-                correctIndex: 1,
-                explanation: 'بإضافة ٥ للطرفين: ٣س = ٢١، ثم بالقسمة على ٣ نحصل على: س = ٧.'
-            },
-            {
-                id: 'q_g9_ma_2', stage: 'متوسط', grade: 'g9', subject: 'الرياضيات', skill: 'الهندسة والقياس', difficulty: 'متوسط', active: true,
-                text: 'مثلث قائم الزاوية طولا ضلعي القائمة فيه ٦ سم و ٨ سم. ما طول الوتر؟',
-                options: ['١٠ سم', '١٢ سم', '١٤ سم', '٤٨ سم'],
-                correctIndex: 0,
-                explanation: 'حسب نظرية فيثاغورس: الوتر² = ٦² + ٨² = ٣٦ + ٦٤ = ١٠٠، إذن الوتر = √١٠٠ = ١٠ سم.'
-            },
-            {
-                id: 'q_g9_ma_3', stage: 'متوسط', grade: 'g9', subject: 'الرياضيات', skill: 'الإحصاء والاحتمالات', difficulty: 'متوسط', active: true,
-                text: 'أُلقيت قطعة نقد ومكعب أرقام مرة واحدة. ما احتمال ظهور (شعار) والعدد (٦) معًا؟',
-                options: ['١/٢', '١/٦', '١/٨', '١/١٢'],
-                correctIndex: 3,
-                explanation: 'الحادثتان مستقلتان: احتمال الشعار (١/٢) × احتمال العدد ٦ (١/٦) = ١/١٢.'
-            },
-            {
-                id: 'q_g9_ma_4', stage: 'متوسط', grade: 'g9', subject: 'الرياضيات', skill: 'التفكير الرياضي وحل المسائل', difficulty: 'متقدم', active: true,
-                text: 'إذا زاد طول ضلع مربع بنسبة ١٠٠٪، فكم تزيد مساحته؟',
-                options: ['١٠٠٪', '٢٠٠٪', '٣٠٠٪', '٤٠٠٪'],
-                correctIndex: 2,
-                explanation: 'إذا كان الضلع ١ فالمساحة ١. عند زيادة الضلع بنسبة ١٠٠٪ يصبح ٢ فتصبح المساحة الجديدة ٤، أي زادت بمقدار ٣ أضعاف (٣٠٠٪).'
-            },
-            // العلوم g9
-            {
-                id: 'q_g9_sc_1', stage: 'متوسط', grade: 'g9', subject: 'العلوم', skill: 'المادة والتفاعلات الكيميائية', difficulty: 'سهل', active: true,
-                text: 'ما الجسيمات الذرية التي تحمل شحنة كهربائية موجبة وتوجد داخل نواة الذرة؟',
-                options: ['الإلكترونات', 'البروتونات', 'النيوترونات', 'الفوتونات'],
-                correctIndex: 1,
-                explanation: 'البروتونات جسيمات موجبة الشحنة داخل النواة، بينما النيوترونات متعادلة والإلكترونات سالبة تدور حول النواة.'
-            },
-            {
-                id: 'q_g9_sc_2', stage: 'متوسط', grade: 'g9', subject: 'العلوم', skill: 'الطاقة والقوى والحركة', difficulty: 'متوسط', active: true,
-                text: 'إذا أثرت قوة محصلة مقدارها ٢٠ نيوتن في جسم كتلته ٤ كجم، فما مقدار تسارع الجسم وفق قانون نيوتن الثاني؟',
-                options: ['٥ م/ث²', '١٦ م/ث²', '٢٤ م/ث²', '٨٠ م/ث²'],
-                correctIndex: 0,
-                explanation: 'قانون نيوتن الثاني: التسارع (ت) = القوة (ق) ÷ الكتلة (ك) = ٢٠ ÷ ٤ = ٥ م/ث².'
-            },
-            {
-                id: 'q_g9_sc_3', stage: 'متوسط', grade: 'g9', subject: 'العلوم', skill: 'جسم الإنسان والصحة', difficulty: 'متوسط', active: true,
-                text: 'ما الجزء المسؤول عن نقل السيالات العصبية بعيدًا عن جسم الخلية العصبية؟',
-                options: ['الشجيرات العصبية', 'المحور الأسطواني', 'النواة', 'الغشاء البلازمي'],
-                correctIndex: 1,
-                explanation: 'المحور الأسطواني ينقل السيالات العصبية بعيدًا عن جسم الخلية العصبية نحو خلايا أخرى.'
-            },
-            {
-                id: 'q_g9_sc_4', stage: 'متوسط', grade: 'g9', subject: 'العلوم', skill: 'التجارب والاستقصاء العلمي', difficulty: 'متقدم', active: true,
-                text: 'في تجربة لدراسة أثر درجة الحرارة في سرعة ذوبان الملح في الماء، ما المتغير المستقل في هذه التجربة؟',
-                options: ['كمية الملح', 'حجم الماء', 'درجة حرارة الماء', 'نوع الكأس الزجاجي'],
-                correctIndex: 2,
-                explanation: 'المتغير المستقل هو العامل الذي يقوم الباحث بتغييره عمدًا لاختبار أثره، وهو هنا درجة حرارة الماء.'
-            }
-        ];
-
-        // القائمة الكاملة للفهرس التفاعلي (20 قسمًا)
-        const SIDEBAR_SECTIONS = [
-            { id: 'home', num: 1, title: 'الصفحة الرئيسية', icon: 'fa-house' },
-            { id: 'about', num: 2, title: 'عن مشروع دوري أبطال نافس', icon: 'fa-circle-info' },
-            { id: 'goals', num: 3, title: 'أهداف المشروع', icon: 'fa-bullseye' },
-            { id: 'register', num: 4, title: 'ابدئي رحلتكِ – تسجيل الطالبة', icon: 'fa-user-plus' },
-            { id: 'dashboard', num: 5, title: 'لوحة الطالبة الشخصية', icon: 'fa-gauge-high' },
-            { id: 'practice-hub', num: 6, title: 'التدريبات التفاعلية', icon: 'fa-dumbbell' },
-            { id: 'practice-arabic', num: 7, title: 'تدريبات لغتي', icon: 'fa-book-open' },
-            { id: 'practice-math', num: 8, title: 'تدريبات الرياضيات', icon: 'fa-calculator' },
-            { id: 'practice-science', num: 9, title: 'تدريبات العلوم', icon: 'fa-flask' },
-            { id: 'exams-hub', num: 10, title: 'الاختبارات المحاكية لنافس', icon: 'fa-stopwatch' },
-            { id: 'exam-arabic', num: 11, title: 'اختبار لغتي', icon: 'fa-feather-pointed' },
-            { id: 'exam-math', num: 12, title: 'اختبار الرياضيات', icon: 'fa-square-root-variable' },
-            { id: 'exam-science', num: 13, title: 'اختبار العلوم', icon: 'fa-atom' },
-            { id: 'exam-comprehensive', num: 14, title: 'الاختبار الشامل للمواد الثلاث', icon: 'fa-trophy' },
-            { id: 'results-analysis', num: 15, title: 'النتائج وتحليل الأداء', icon: 'fa-chart-pie' },
-            { id: 'certificates', num: 16, title: 'شهادات الإنجاز', icon: 'fa-certificate' },
-            { id: 'honor-board', num: 17, title: 'لوحة شرف الأبطال', icon: 'fa-crown' },
-            { id: 'achievements', num: 18, title: 'إنجازاتي وسجل محاولاتي', icon: 'fa-medal' },
-            { id: 'tips', num: 19, title: 'نصائح وإرشادات الاستعداد لنافس', icon: 'fa-lightbulb' },
-            { id: 'faq', num: 20, title: 'الأسئلة الشائعة وطريقة الاستخدام', icon: 'fa-circle-question' }
-        ];
-
-        /*************************************************************************
-         * 2. إدارة الحالة العامة والتخزين السحابي (Supabase + Local Persistence)
-         *************************************************************************/
-        let supabaseClient = null;
-        let isCloudConnected = false;
-
-        const AppState = {
-            currentRoute: 'home',
-            currentStudent: null, // بيانات الطالبة المسجلة حاليًا
-            isAdminAuthenticated: false,
-            adminRole: 'مدير المنصة',
-            schoolSettings: { ...DEFAULT_SCHOOL_SETTINGS },
-            students: [],
-            questions: [],
-            practiceSessions: [],
-            examResults: [],
-            certificates: [],
-            // حالة جلسة التدريب النشطة
-            activePractice: null,
-            // حالة الاختبار المحاكي النشط
-            activeExam: null,
-            examTimerInterval: null,
-            // آخر نتيجة للعرض في صفحة تحليل الأداء
-            lastViewedResult: null,
-            lastViewedCertificate: null
-        };
-
-        // تحميل البيانات من التخزين الدائم ومحاولة الاتصال بـ Supabase إن وُجدت مفاتيح الربط
-        async function initAppStorage() {
-            try {
-                const savedSettings = localStorage.getItem('nafs_school_settings');
-                if (savedSettings) AppState.schoolSettings = { ...DEFAULT_SCHOOL_SETTINGS, ...JSON.parse(savedSettings) };
-
-                const savedStudents = localStorage.getItem('nafs_students');
-                if (savedStudents) AppState.students = JSON.parse(savedStudents);
-
-                const savedQuestions = localStorage.getItem('nafs_questions');
-                if (savedQuestions && JSON.parse(savedQuestions).length > 0) {
-                    AppState.questions = JSON.parse(savedQuestions);
-                } else {
-                    AppState.questions = [...INITIAL_QUESTIONS_BANK];
-                    localStorage.setItem('nafs_questions', JSON.stringify(AppState.questions));
-                }
-
-                const savedPractice = localStorage.getItem('nafs_practice_sessions');
-                if (savedPractice) AppState.practiceSessions = JSON.parse(savedPractice);
-
-                const savedResults = localStorage.getItem('nafs_exam_results');
-                if (savedResults) AppState.examResults = JSON.parse(savedResults);
-
-                const savedCerts = localStorage.getItem('nafs_certificates');
-                if (savedCerts) AppState.certificates = JSON.parse(savedCerts);
-
-                // استعادة جلسة الطالبة الحالية إن وجدت
-                const activeStudentId = sessionStorage.getItem('nafs_active_student_id');
-                if (activeStudentId) {
-                    const found = AppState.students.find(s => s.id === activeStudentId && s.active !== false);
-                    if (found) AppState.currentStudent = found;
-                }
-
-                // التحقق من إعدادات Supabase المحفوظة للربط السحابي الحقيقي
-                const sbUrl = localStorage.getItem('nafs_supabase_url');
-                const sbKey = localStorage.getItem('nafs_supabase_anon_key');
-                if (sbUrl && sbKey) {
-                    await connectToSupabase(sbUrl, sbKey, true);
-                }
-            } catch (err) {
-                console.error('خطأ في تهيئة البيانات:', err);
-            }
-            updateOfficialHeaderUI();
-            updateStudentHeaderUI();
-        }
-
-        function saveAllToStorage() {
-            try {
-                localStorage.setItem('nafs_school_settings', JSON.stringify(AppState.schoolSettings));
-                localStorage.setItem('nafs_students', JSON.stringify(AppState.students));
-                localStorage.setItem('nafs_questions', JSON.stringify(AppState.questions));
-                localStorage.setItem('nafs_practice_sessions', JSON.stringify(AppState.practiceSessions));
-                localStorage.setItem('nafs_exam_results', JSON.stringify(AppState.examResults));
-                localStorage.setItem('nafs_certificates', JSON.stringify(AppState.certificates));
-            } catch (e) {
-                console.error('فشل الحفظ المحلي:', e);
-            }
-        }
-
-        // الاتصال بقاعدة بيانات Supabase السحابية ومزامنة الجداول
-        async function connectToSupabase(url, anonKey, silent = false) {
-            try {
-                if (!window.supabase) throw new Error('مكتبة Supabase غير محملة');
-                supabaseClient = window.supabase.createClient(url, anonKey);
-
-                // اختبار الاتصال الفعلي عبر جلب إعدادات المدرسة
-                const { data: settingsData, error } = await supabaseClient.from('school_settings').select('*').limit(1);
-                if (error) {
-                    // قد تكون الجداول لم تُنشأ بعد في مشروع Supabase
-                    if (!silent) showToast('تم الاتصال بالخادم، يرجى تنفيذ كود SQL لإنشاء الجداول الـ 18 في Supabase.', 'warning');
-                    updateDbBadge(false, 'متصل (بانتظار إنشاء الجداول)');
-                    return false;
-                }
-
-                isCloudConnected = true;
-                localStorage.setItem('nafs_supabase_url', url);
-                localStorage.setItem('nafs_supabase_anon_key', anonKey);
-                updateDbBadge(true, 'متصل بالسحابة (Supabase PostgreSQL)');
-
-                // مزامنة البيانات من السحابة إلى الواجهة
-                await syncFromCloud();
-                if (!silent) showToast('تم الربط السحابي مع قاعدة بيانات Supabase بنجاح!', 'success');
-                return true;
-            } catch (err) {
-                isCloudConnected = false;
-                updateDbBadge(false, 'تعذر الربط السحابي (يعمل محليًا)');
-                if (!silent) showToast('تعذر الاتصال بـ Supabase: تأكدي من صحة الرابط والمفتاح.', 'error');
-                return false;
-            }
-        }
-
-        async function syncFromCloud() {
-            if (!isCloudConnected || !supabaseClient) return;
-            try {
-                const [stRes, qRes, resRes, certRes, setRes] = await Promise.all([
-                    supabaseClient.from('students').select('*'),
-                    supabaseClient.from('questions').select('*'),
-                    supabaseClient.from('results').select('*'),
-                    supabaseClient.from('certificates').select('*'),
-                    supabaseClient.from('school_settings').select('*').limit(1)
-                ]);
-
-                if (setRes.data && setRes.data.length > 0) {
-                    AppState.schoolSettings = { ...AppState.schoolSettings, ...setRes.data[0] };
-                }
-                if (stRes.data && stRes.data.length > 0) AppState.students = stRes.data;
-                if (qRes.data && qRes.data.length > 0) AppState.questions = qRes.data;
-                if (resRes.data && resRes.data.length > 0) AppState.examResults = resRes.data;
-                if (certRes.data && certRes.data.length > 0) AppState.certificates = certRes.data;
-
-                saveAllToStorage();
-                updateOfficialHeaderUI();
-            } catch (e) {
-                console.warn('ملاحظة أثناء المزامنة السحابية:', e);
-            }
-        }
-
-        async function pushRecordToCloud(tableName, record) {
-            if (!isCloudConnected || !supabaseClient) return;
-            try {
-                await supabaseClient.from(tableName).upsert(record);
-            } catch (e) {
-                console.warn(`تعذر مزامنة السجل في جدول ${tableName}:`, e);
- 
+            <!-- Modest Saudi Schoolgirl Cartoon Illustration + NAFS Logo + 3D Trophy SVG -->
+            <div style="text-align:center;">
+              <div style="background:rgba(255,255,255,0.96); border-radius:24px; padding:18px; border:3px solid var(--gold-400); box-shadow:0 12px 28px rgba(0,0,0,0.2);">
+                <img src="data:image/webp;base64,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
